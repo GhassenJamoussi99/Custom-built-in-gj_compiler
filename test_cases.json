@@ -1,0 +1,100 @@
+{
+    "tests": [
+      {
+        "file": "good1.bminor",
+        "expected_output": "",
+        "expected_exit_code": 10
+      },
+      {
+        "file": "good2.bminor",
+        "expected_output": "",
+        "expected_exit_code": 10
+      },
+      {
+        "file": "good3.bminor",
+        "expected_output": "",
+        "expected_exit_code": 10
+      },
+      {
+        "file": "good4.bminor",
+        "expected_output": "",
+        "expected_exit_code": 10
+      },
+      {
+        "file": "good5.bminor",
+        "expected_output": "",
+        "expected_exit_code": 10
+      },
+      {
+        "file": "good6.bminor",
+        "expected_output": "",
+        "expected_exit_code": 10
+      },
+      {
+        "file": "good7.bminor",
+        "expected_output": "",
+        "expected_exit_code": 10
+      },
+      {
+        "file": "good8.bminor",
+        "expected_output": "",
+        "expected_exit_code": 10
+      },
+      {
+        "file": "good9.bminor",
+        "expected_output": "",
+        "expected_exit_code": 10
+      },
+      {
+        "file": "good10.bminor",
+        "expected_output": "10",
+        "expected_exit_code": 0
+      },
+      {
+        "file": "good11.bminor",
+        "expected_output": "hello world",
+        "expected_exit_code": 0
+      },
+      {
+        "file": "good12.bminor",
+        "expected_output": "x >= z\ny > x\nz == x\nx <= y\nx != y\n",
+        "expected_exit_code": 0
+      },
+      {
+        "file": "good14.bminor",
+        "expected_output": "0\n1\n2\n3\n4\n5\n6\n7\n8\n9",
+        "expected_exit_code": 0
+      },
+      {
+        "file": "good14_02.bminor",
+        "expected_output": "0\n1\n2\n3\n4\n5\n6\n7\n8\n9",
+        "expected_exit_code": 0
+      },
+      {
+        "file": "good16_1.bminor",
+        "expected_output": "hello",
+        "expected_exit_code": 0
+      },
+      {
+        "file": "good16_2.bminor",
+        "expected_output": " world",
+        "expected_exit_code": 0
+      },
+      {
+        "file": "good20.bminor",
+        "expected_output": "Numbers\n0\n2\n4\n6\n8\n10\n12\n14\n16\n18\n20\n22\n24\n26\n28\n30\n32\n34\n36\n38\n40\n42\n44\n46\n48\n50\n52\n54\n56\n58\n",
+        "expected_exit_code": 0
+      },
+      {
+        "file": "good21.bminor",
+        "expected_output": "Numbers\n0\n2\n4\n6\n8\n10\n12\n14\n16\n18\n20\n22\n24\n26\n28\n30\n32\n34\n36\n38\n40\n42\n44\n46\n48\n50\n52\n54\n56\n58\n",
+        "expected_exit_code": 0
+      },
+      {
+        "file": "gcd.bminor",
+        "expected_output": "GCD Tests\n6",
+        "expected_exit_code": 0
+      }
+    ]
+  }
+  

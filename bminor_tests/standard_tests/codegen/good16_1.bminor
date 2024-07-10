@@ -1,0 +1,7 @@
+// tests strings/string assignments and printing 
+str:string = "hello";
+main:function integer () =
+{
+	print str;
+	return 0;
+}

@@ -1,0 +1,19 @@
+test: function integer ( a: integer, b: integer) =
+{
+    return a + b;
+}
+
+main: function integer () =
+{
+    i: integer;
+    i = 0;
+
+    print "Numbers\n";
+
+    while (i < 30) {
+        print test(i, i);
+        i = i + 1;
+    }
+
+    return 0;
+}

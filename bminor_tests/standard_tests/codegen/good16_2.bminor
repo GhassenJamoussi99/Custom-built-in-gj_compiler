@@ -1,0 +1,7 @@
+// tests strings/string assignments and printing 
+main:function integer () =
+{
+	str2:string = " world";
+	print str2;
+	return 0;
+}

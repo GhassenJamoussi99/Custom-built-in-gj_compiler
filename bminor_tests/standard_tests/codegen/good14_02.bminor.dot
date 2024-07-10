@@ -1,0 +1,92 @@
+digraph AST {
+
+node [shape=record]
+
+DECL_0 [label="{DECL_main | { <type> type | <value> value | <code> code | <next> next }}"];
+
+TYPE_1 [label="{TYPE_FUNCTION| { <subtype> subtype | <params> params}}"];
+
+SUBTYPE_1 [label="{TYPE_INTEGER | { <subtype> subtype | <params> params }}"];
+
+TYPE_1:subtype -> SUBTYPE_1;
+
+DECL_0:type -> TYPE_1;
+
+STMT_2 [label="{STMT_DECL | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+DECL_3 [label="{DECL_y | { <type> type | <value> value | <code> code | <next> next }}"];
+
+TYPE_4 [label="{TYPE_INTEGER| { <subtype> subtype | <params> params}}"];
+
+DECL_3:type -> TYPE_4;
+
+EXPR_4 [label="{EXPR_INTEGER_LITERAL | { 0 }}"];
+
+DECL_3:value -> EXPR_4;
+
+STMT_2:decl -> DECL_3;
+
+STMT_5 [label="{STMT_FOR | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_6 [label="{EXPR_LT | { <left> left | <right> right }}"];
+
+EXPR_7 [label="{EXPR_NAME | { y }}"];
+
+EXPR_6:left -> EXPR_7;
+
+EXPR_8 [label="{EXPR_INTEGER_LITERAL | { 10 }}"];
+
+EXPR_6:right -> EXPR_8;
+
+STMT_5:expr -> EXPR_6;
+
+EXPR_9 [label="{EXPR_ASSIGN | { <left> left | <right> right }}"];
+
+EXPR_10 [label="{EXPR_NAME | { y }}"];
+
+EXPR_9:left -> EXPR_10;
+
+EXPR_11 [label="{EXPR_ADD | { <left> left | <right> right }}"];
+
+EXPR_12 [label="{EXPR_NAME | { y }}"];
+
+EXPR_11:left -> EXPR_12;
+
+EXPR_13 [label="{EXPR_INTEGER_LITERAL | { 1 }}"];
+
+EXPR_11:right -> EXPR_13;
+
+EXPR_9:right -> EXPR_11;
+
+STMT_5:next_expr -> EXPR_9;
+
+STMT_14 [label="{STMT_BLOCK | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+STMT_15 [label="{STMT_PRINT | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_16 [label="{EXPR_ARG | { <left> left | <right> right }}"];
+
+EXPR_17 [label="{EXPR_NAME | { y }}"];
+
+EXPR_16:left -> EXPR_17;
+
+STMT_15:expr -> EXPR_16;
+
+STMT_14:body -> STMT_15;
+
+STMT_5:body -> STMT_14;
+
+STMT_18 [label="{STMT_RETURN | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_19 [label="{EXPR_INTEGER_LITERAL | { 0 }}"];
+
+STMT_18:expr -> EXPR_19;
+
+STMT_5:next -> STMT_18;
+
+STMT_2:next -> STMT_5;
+
+DECL_0:code -> STMT_2;
+
+}
+

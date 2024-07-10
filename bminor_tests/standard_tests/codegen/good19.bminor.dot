@@ -1,0 +1,264 @@
+digraph AST {
+
+node [shape=record]
+
+DECL_0 [label="{DECL_fib | { <type> type | <value> value | <code> code | <next> next }}"];
+
+TYPE_1 [label="{TYPE_FUNCTION| { <subtype> subtype | <params> params}}"];
+
+SUBTYPE_1 [label="{TYPE_INTEGER | { <subtype> subtype | <params> params }}"];
+
+TYPE_1:subtype -> SUBTYPE_1;
+
+PARAM_2 [label="{PARAM | { <name> name | <type> type | <next> next }}"];
+
+SUBTYPE_3 [label="{TYPE_INTEGER | { <subtype> subtype | <params> params }}"];
+
+PARAM_2:type -> TYPE_3;
+
+TYPE_1:params -> PARAM_2;
+
+DECL_0:type -> TYPE_1;
+
+STMT_4 [label="{STMT_IF_ELSE | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_5 [label="{EXPR_LT | { <left> left | <right> right }}"];
+
+EXPR_6 [label="{EXPR_NAME | { x }}"];
+
+EXPR_5:left -> EXPR_6;
+
+EXPR_7 [label="{EXPR_INTEGER_LITERAL | { 1 }}"];
+
+EXPR_5:right -> EXPR_7;
+
+STMT_4:expr -> EXPR_5;
+
+STMT_8 [label="{STMT_BLOCK | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+STMT_9 [label="{STMT_RETURN | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_10 [label="{EXPR_INTEGER_LITERAL | { 0 }}"];
+
+STMT_9:expr -> EXPR_10;
+
+STMT_8:body -> STMT_9;
+
+STMT_4:body -> STMT_8;
+
+STMT_11 [label="{STMT_BLOCK | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+STMT_12 [label="{STMT_IF_ELSE | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_13 [label="{EXPR_LT | { <left> left | <right> right }}"];
+
+EXPR_14 [label="{EXPR_NAME | { x }}"];
+
+EXPR_13:left -> EXPR_14;
+
+EXPR_15 [label="{EXPR_INTEGER_LITERAL | { 2 }}"];
+
+EXPR_13:right -> EXPR_15;
+
+STMT_12:expr -> EXPR_13;
+
+STMT_16 [label="{STMT_BLOCK | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+STMT_17 [label="{STMT_RETURN | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_18 [label="{EXPR_INTEGER_LITERAL | { 1 }}"];
+
+STMT_17:expr -> EXPR_18;
+
+STMT_16:body -> STMT_17;
+
+STMT_12:body -> STMT_16;
+
+STMT_19 [label="{STMT_BLOCK | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+STMT_20 [label="{STMT_RETURN | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_21 [label="{EXPR_ADD | { <left> left | <right> right }}"];
+
+EXPR_22 [label="{EXPR_CALL | { <left> left | <right> right }}"];
+
+EXPR_23 [label="{EXPR_NAME | { fib }}"];
+
+EXPR_22:left -> EXPR_23;
+
+EXPR_24 [label="{EXPR_ARG | { <left> left | <right> right }}"];
+
+EXPR_25 [label="{EXPR_SUBTRACT | { <left> left | <right> right }}"];
+
+EXPR_26 [label="{EXPR_NAME | { x }}"];
+
+EXPR_25:left -> EXPR_26;
+
+EXPR_27 [label="{EXPR_INTEGER_LITERAL | { 1 }}"];
+
+EXPR_25:right -> EXPR_27;
+
+EXPR_24:left -> EXPR_25;
+
+EXPR_22:right -> EXPR_24;
+
+EXPR_21:left -> EXPR_22;
+
+EXPR_28 [label="{EXPR_CALL | { <left> left | <right> right }}"];
+
+EXPR_29 [label="{EXPR_NAME | { fib }}"];
+
+EXPR_28:left -> EXPR_29;
+
+EXPR_30 [label="{EXPR_ARG | { <left> left | <right> right }}"];
+
+EXPR_31 [label="{EXPR_SUBTRACT | { <left> left | <right> right }}"];
+
+EXPR_32 [label="{EXPR_NAME | { x }}"];
+
+EXPR_31:left -> EXPR_32;
+
+EXPR_33 [label="{EXPR_INTEGER_LITERAL | { 2 }}"];
+
+EXPR_31:right -> EXPR_33;
+
+EXPR_30:left -> EXPR_31;
+
+EXPR_28:right -> EXPR_30;
+
+EXPR_21:right -> EXPR_28;
+
+STMT_20:expr -> EXPR_21;
+
+STMT_19:body -> STMT_20;
+
+STMT_12:else_body -> STMT_19;
+
+STMT_11:body -> STMT_12;
+
+STMT_4:else_body -> STMT_11;
+
+DECL_0:code -> STMT_4;
+
+DECL_0:next -> DECL_34;
+
+DECL_34 [label="{DECL_main | { <type> type | <value> value | <code> code | <next> next }}"];
+
+TYPE_35 [label="{TYPE_FUNCTION| { <subtype> subtype | <params> params}}"];
+
+SUBTYPE_35 [label="{TYPE_INTEGER | { <subtype> subtype | <params> params }}"];
+
+TYPE_35:subtype -> SUBTYPE_35;
+
+DECL_34:type -> TYPE_35;
+
+STMT_36 [label="{STMT_DECL | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+DECL_37 [label="{DECL_i | { <type> type | <value> value | <code> code | <next> next }}"];
+
+TYPE_38 [label="{TYPE_INTEGER| { <subtype> subtype | <params> params}}"];
+
+DECL_37:type -> TYPE_38;
+
+STMT_36:decl -> DECL_37;
+
+STMT_38 [label="{STMT_PRINT | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_39 [label="{EXPR_ARG | { <left> left | <right> right }}"];
+
+EXPR_40 [label="{EXPR_STRING_LITERAL | { \"Table of Fibonnacci Numbers\n\" }}"];
+
+EXPR_39:left -> EXPR_40;
+
+STMT_38:expr -> EXPR_39;
+
+STMT_41 [label="{STMT_FOR | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_42 [label="{EXPR_ASSIGN | { <left> left | <right> right }}"];
+
+EXPR_43 [label="{EXPR_NAME | { i }}"];
+
+EXPR_42:left -> EXPR_43;
+
+EXPR_44 [label="{EXPR_INTEGER_LITERAL | { 0 }}"];
+
+EXPR_42:right -> EXPR_44;
+
+STMT_41:init_expr -> EXPR_42;
+
+EXPR_45 [label="{EXPR_LT | { <left> left | <right> right }}"];
+
+EXPR_46 [label="{EXPR_NAME | { i }}"];
+
+EXPR_45:left -> EXPR_46;
+
+EXPR_47 [label="{EXPR_INTEGER_LITERAL | { 30 }}"];
+
+EXPR_45:right -> EXPR_47;
+
+STMT_41:expr -> EXPR_45;
+
+EXPR_48 [label="{EXPR_ASSIGN | { <left> left | <right> right }}"];
+
+EXPR_49 [label="{EXPR_NAME | { i }}"];
+
+EXPR_48:left -> EXPR_49;
+
+EXPR_50 [label="{EXPR_ADD | { <left> left | <right> right }}"];
+
+EXPR_51 [label="{EXPR_NAME | { i }}"];
+
+EXPR_50:left -> EXPR_51;
+
+EXPR_52 [label="{EXPR_INTEGER_LITERAL | { 1 }}"];
+
+EXPR_50:right -> EXPR_52;
+
+EXPR_48:right -> EXPR_50;
+
+STMT_41:next_expr -> EXPR_48;
+
+STMT_53 [label="{STMT_BLOCK | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+STMT_54 [label="{STMT_PRINT | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_55 [label="{EXPR_ARG | { <left> left | <right> right }}"];
+
+EXPR_56 [label="{EXPR_CALL | { <left> left | <right> right }}"];
+
+EXPR_57 [label="{EXPR_NAME | { fib }}"];
+
+EXPR_56:left -> EXPR_57;
+
+EXPR_58 [label="{EXPR_ARG | { <left> left | <right> right }}"];
+
+EXPR_59 [label="{EXPR_NAME | { i }}"];
+
+EXPR_58:left -> EXPR_59;
+
+EXPR_56:right -> EXPR_58;
+
+EXPR_55:left -> EXPR_56;
+
+STMT_54:expr -> EXPR_55;
+
+STMT_53:body -> STMT_54;
+
+STMT_41:body -> STMT_53;
+
+STMT_60 [label="{STMT_RETURN | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_61 [label="{EXPR_INTEGER_LITERAL | { 0 }}"];
+
+STMT_60:expr -> EXPR_61;
+
+STMT_41:next -> STMT_60;
+
+STMT_38:next -> STMT_41;
+
+STMT_36:next -> STMT_38;
+
+DECL_34:code -> STMT_36;
+
+}
+

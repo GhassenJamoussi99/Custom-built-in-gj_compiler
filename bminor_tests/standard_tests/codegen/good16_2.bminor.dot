@@ -1,0 +1,52 @@
+digraph AST {
+
+node [shape=record]
+
+DECL_0 [label="{DECL_main | { <type> type | <value> value | <code> code | <next> next }}"];
+
+TYPE_1 [label="{TYPE_FUNCTION| { <subtype> subtype | <params> params}}"];
+
+SUBTYPE_1 [label="{TYPE_INTEGER | { <subtype> subtype | <params> params }}"];
+
+TYPE_1:subtype -> SUBTYPE_1;
+
+DECL_0:type -> TYPE_1;
+
+STMT_2 [label="{STMT_DECL | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+DECL_3 [label="{DECL_str2 | { <type> type | <value> value | <code> code | <next> next }}"];
+
+TYPE_4 [label="{TYPE_STRING| { <subtype> subtype | <params> params}}"];
+
+DECL_3:type -> TYPE_4;
+
+EXPR_4 [label="{EXPR_STRING_LITERAL | { \" world\" }}"];
+
+DECL_3:value -> EXPR_4;
+
+STMT_2:decl -> DECL_3;
+
+STMT_5 [label="{STMT_PRINT | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_6 [label="{EXPR_ARG | { <left> left | <right> right }}"];
+
+EXPR_7 [label="{EXPR_NAME | { str2 }}"];
+
+EXPR_6:left -> EXPR_7;
+
+STMT_5:expr -> EXPR_6;
+
+STMT_8 [label="{STMT_RETURN | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_9 [label="{EXPR_INTEGER_LITERAL | { 0 }}"];
+
+STMT_8:expr -> EXPR_9;
+
+STMT_5:next -> STMT_8;
+
+STMT_2:next -> STMT_5;
+
+DECL_0:code -> STMT_2;
+
+}
+

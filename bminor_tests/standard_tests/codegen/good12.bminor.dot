@@ -1,0 +1,308 @@
+digraph AST {
+
+node [shape=record]
+
+DECL_0 [label="{DECL_x | { <type> type | <value> value | <code> code | <next> next }}"];
+
+TYPE_1 [label="{TYPE_INTEGER| { <subtype> subtype | <params> params}}"];
+
+DECL_0:type -> TYPE_1;
+
+EXPR_1 [label="{EXPR_INTEGER_LITERAL | { 5 }}"];
+
+DECL_0:value -> EXPR_1;
+
+DECL_0:next -> DECL_2;
+
+DECL_2 [label="{DECL_main | { <type> type | <value> value | <code> code | <next> next }}"];
+
+TYPE_3 [label="{TYPE_FUNCTION| { <subtype> subtype | <params> params}}"];
+
+SUBTYPE_3 [label="{TYPE_INTEGER | { <subtype> subtype | <params> params }}"];
+
+TYPE_3:subtype -> SUBTYPE_3;
+
+DECL_2:type -> TYPE_3;
+
+STMT_4 [label="{STMT_DECL | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+DECL_5 [label="{DECL_y | { <type> type | <value> value | <code> code | <next> next }}"];
+
+TYPE_6 [label="{TYPE_INTEGER| { <subtype> subtype | <params> params}}"];
+
+DECL_5:type -> TYPE_6;
+
+EXPR_6 [label="{EXPR_INTEGER_LITERAL | { 10 }}"];
+
+DECL_5:value -> EXPR_6;
+
+STMT_4:decl -> DECL_5;
+
+STMT_7 [label="{STMT_DECL | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+DECL_8 [label="{DECL_z | { <type> type | <value> value | <code> code | <next> next }}"];
+
+TYPE_9 [label="{TYPE_INTEGER| { <subtype> subtype | <params> params}}"];
+
+DECL_8:type -> TYPE_9;
+
+EXPR_9 [label="{EXPR_INTEGER_LITERAL | { 5 }}"];
+
+DECL_8:value -> EXPR_9;
+
+STMT_7:decl -> DECL_8;
+
+STMT_10 [label="{STMT_IF_ELSE | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_11 [label="{EXPR_GEQ | { <left> left | <right> right }}"];
+
+EXPR_12 [label="{EXPR_NAME | { x }}"];
+
+EXPR_11:left -> EXPR_12;
+
+EXPR_13 [label="{EXPR_NAME | { z }}"];
+
+EXPR_11:right -> EXPR_13;
+
+STMT_10:expr -> EXPR_11;
+
+STMT_14 [label="{STMT_BLOCK | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+STMT_15 [label="{STMT_PRINT | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_16 [label="{EXPR_ARG | { <left> left | <right> right }}"];
+
+EXPR_17 [label="{EXPR_STRING_LITERAL | { \"x \>= z\n\" }}"];
+
+EXPR_16:left -> EXPR_17;
+
+STMT_15:expr -> EXPR_16;
+
+STMT_14:body -> STMT_15;
+
+STMT_10:body -> STMT_14;
+
+STMT_18 [label="{STMT_BLOCK | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+STMT_19 [label="{STMT_PRINT | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_20 [label="{EXPR_ARG | { <left> left | <right> right }}"];
+
+EXPR_21 [label="{EXPR_STRING_LITERAL | { \"shouldn't be printed\n\" }}"];
+
+EXPR_20:left -> EXPR_21;
+
+STMT_19:expr -> EXPR_20;
+
+STMT_18:body -> STMT_19;
+
+STMT_10:else_body -> STMT_18;
+
+STMT_22 [label="{STMT_IF_ELSE | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_23 [label="{EXPR_GT | { <left> left | <right> right }}"];
+
+EXPR_24 [label="{EXPR_NAME | { y }}"];
+
+EXPR_23:left -> EXPR_24;
+
+EXPR_25 [label="{EXPR_NAME | { x }}"];
+
+EXPR_23:right -> EXPR_25;
+
+STMT_22:expr -> EXPR_23;
+
+STMT_26 [label="{STMT_BLOCK | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+STMT_27 [label="{STMT_PRINT | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_28 [label="{EXPR_ARG | { <left> left | <right> right }}"];
+
+EXPR_29 [label="{EXPR_STRING_LITERAL | { \"y \> x\n\" }}"];
+
+EXPR_28:left -> EXPR_29;
+
+STMT_27:expr -> EXPR_28;
+
+STMT_26:body -> STMT_27;
+
+STMT_22:body -> STMT_26;
+
+STMT_30 [label="{STMT_BLOCK | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+STMT_31 [label="{STMT_PRINT | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_32 [label="{EXPR_ARG | { <left> left | <right> right }}"];
+
+EXPR_33 [label="{EXPR_STRING_LITERAL | { \"shouldn't be printed\n\" }}"];
+
+EXPR_32:left -> EXPR_33;
+
+STMT_31:expr -> EXPR_32;
+
+STMT_30:body -> STMT_31;
+
+STMT_22:else_body -> STMT_30;
+
+STMT_34 [label="{STMT_IF_ELSE | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_35 [label="{EXPR_EQ | { <left> left | <right> right }}"];
+
+EXPR_36 [label="{EXPR_NAME | { z }}"];
+
+EXPR_35:left -> EXPR_36;
+
+EXPR_37 [label="{EXPR_NAME | { x }}"];
+
+EXPR_35:right -> EXPR_37;
+
+STMT_34:expr -> EXPR_35;
+
+STMT_38 [label="{STMT_BLOCK | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+STMT_39 [label="{STMT_PRINT | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_40 [label="{EXPR_ARG | { <left> left | <right> right }}"];
+
+EXPR_41 [label="{EXPR_STRING_LITERAL | { \"z == x\n\" }}"];
+
+EXPR_40:left -> EXPR_41;
+
+STMT_39:expr -> EXPR_40;
+
+STMT_38:body -> STMT_39;
+
+STMT_34:body -> STMT_38;
+
+STMT_42 [label="{STMT_BLOCK | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+STMT_43 [label="{STMT_PRINT | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_44 [label="{EXPR_ARG | { <left> left | <right> right }}"];
+
+EXPR_45 [label="{EXPR_STRING_LITERAL | { \"shouldn't be printed\n\" }}"];
+
+EXPR_44:left -> EXPR_45;
+
+STMT_43:expr -> EXPR_44;
+
+STMT_42:body -> STMT_43;
+
+STMT_34:else_body -> STMT_42;
+
+STMT_46 [label="{STMT_IF_ELSE | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_47 [label="{EXPR_LEQ | { <left> left | <right> right }}"];
+
+EXPR_48 [label="{EXPR_NAME | { x }}"];
+
+EXPR_47:left -> EXPR_48;
+
+EXPR_49 [label="{EXPR_NAME | { y }}"];
+
+EXPR_47:right -> EXPR_49;
+
+STMT_46:expr -> EXPR_47;
+
+STMT_50 [label="{STMT_BLOCK | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+STMT_51 [label="{STMT_PRINT | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_52 [label="{EXPR_ARG | { <left> left | <right> right }}"];
+
+EXPR_53 [label="{EXPR_STRING_LITERAL | { \"x \<= y\n\" }}"];
+
+EXPR_52:left -> EXPR_53;
+
+STMT_51:expr -> EXPR_52;
+
+STMT_50:body -> STMT_51;
+
+STMT_46:body -> STMT_50;
+
+STMT_54 [label="{STMT_BLOCK | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+STMT_55 [label="{STMT_PRINT | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_56 [label="{EXPR_ARG | { <left> left | <right> right }}"];
+
+EXPR_57 [label="{EXPR_STRING_LITERAL | { \"shouldn't be printed\n\" }}"];
+
+EXPR_56:left -> EXPR_57;
+
+STMT_55:expr -> EXPR_56;
+
+STMT_54:body -> STMT_55;
+
+STMT_46:else_body -> STMT_54;
+
+STMT_58 [label="{STMT_IF_ELSE | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_59 [label="{EXPR_NEQ | { <left> left | <right> right }}"];
+
+EXPR_60 [label="{EXPR_NAME | { x }}"];
+
+EXPR_59:left -> EXPR_60;
+
+EXPR_61 [label="{EXPR_NAME | { y }}"];
+
+EXPR_59:right -> EXPR_61;
+
+STMT_58:expr -> EXPR_59;
+
+STMT_62 [label="{STMT_BLOCK | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+STMT_63 [label="{STMT_PRINT | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_64 [label="{EXPR_ARG | { <left> left | <right> right }}"];
+
+EXPR_65 [label="{EXPR_STRING_LITERAL | { \"x != y\n\" }}"];
+
+EXPR_64:left -> EXPR_65;
+
+STMT_63:expr -> EXPR_64;
+
+STMT_62:body -> STMT_63;
+
+STMT_58:body -> STMT_62;
+
+STMT_66 [label="{STMT_BLOCK | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+STMT_67 [label="{STMT_PRINT | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_68 [label="{EXPR_ARG | { <left> left | <right> right }}"];
+
+EXPR_69 [label="{EXPR_STRING_LITERAL | { \"shouldn't be printed\n\" }}"];
+
+EXPR_68:left -> EXPR_69;
+
+STMT_67:expr -> EXPR_68;
+
+STMT_66:body -> STMT_67;
+
+STMT_58:else_body -> STMT_66;
+
+STMT_70 [label="{STMT_RETURN | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}"];
+
+EXPR_71 [label="{EXPR_INTEGER_LITERAL | { 0 }}"];
+
+STMT_70:expr -> EXPR_71;
+
+STMT_58:next -> STMT_70;
+
+STMT_46:next -> STMT_58;
+
+STMT_34:next -> STMT_46;
+
+STMT_22:next -> STMT_34;
+
+STMT_10:next -> STMT_22;
+
+STMT_7:next -> STMT_10;
+
+STMT_4:next -> STMT_7;
+
+DECL_2:code -> STMT_4;
+
+}
+

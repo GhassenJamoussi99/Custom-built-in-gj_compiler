@@ -1,0 +1,16 @@
+// tests strings and string comparisions
+// and use of strings as local variables
+
+str:string = "hello";
+str2:string = " world";
+
+main:function integer () =
+{
+	str3:string = str;
+	if(str == str3)
+	{
+		print str;
+	}
+
+	return 0;
+}

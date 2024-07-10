@@ -1,0 +1,11 @@
+// tests for loops
+x:integer = 1;
+main: function integer () =
+{
+	for(x = 0; x<11; x++)
+	{
+		print x;
+	}
+
+	return 0;
+}
