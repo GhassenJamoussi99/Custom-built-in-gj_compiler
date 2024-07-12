@@ -42,7 +42,7 @@ This will compile the project and generate an executable file called `gj_compile
 - [Compiler Examples Repository](https://github.com/dthain/compilerbook-examples/tree/master): A variety of compiler examples on GitHub based on [Compiler Book](http://compilerbook.org/).
 - [Compiler Explorer](https://godbolt.org/): Interactively explore and test compiler outputs online.
 
-## Done by:
+## Done by
 ```
    Ghassen Jamoussi
 ```
