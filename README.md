@@ -1,8 +1,7 @@
 # M203_Custom_Compiler
 
 ## Introduction
-This project is an implementation a custom compiler in C++. This repository contains the source code and other files necessary to build the program.
-
+This project is an implementation of a custom compiler in C++.
 
 ##  Prerequisites
 Before launching the program, ensure you have the following tools installed:
@@ -43,3 +42,7 @@ This will compile the project and generate an executable file called `gj_compile
 - [Compiler Examples Repository](https://github.com/dthain/compilerbook-examples/tree/master): A variety of compiler examples on GitHub based on [Compiler Book](http://compilerbook.org/).
 - [Compiler Explorer](https://godbolt.org/): Interactively explore and test compiler outputs online.
 
+## Done by:
+```
+   Ghassen Jamoussi
+```
