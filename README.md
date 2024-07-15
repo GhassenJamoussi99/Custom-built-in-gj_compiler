@@ -1,4 +1,4 @@
-# M203_Custom_Compiler
+# Custom built-in gj_compiler
 
 ## Introduction
 This project is an implementation of a custom compiler in C++.
