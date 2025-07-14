@@ -5,7 +5,9 @@
 #include "expr.h"
 #include "decl.h"
 #include "stmt.h"
+#include "param_list.h"
 #include "dot_gen.h"
+#include "type.h"
 
 #include "log.h"
 #include "dot_log.h"
@@ -145,7 +147,7 @@ void print_param_list_dot(struct param_list* params) {
     }
 }
 
-void print_type_dot(struct type* t) {
+void print_type_dot(Type* t) {
     if (!t) return;
 
     std::string node_label = generate_node_label("SUBTYPE", node_counter++);

@@ -1,5 +1,7 @@
 #include "semantic_routines.h"
 #include "log.h"
+#include "stmt.h"
+
 #include <cstdlib>
 #include <iostream>
 #include <string>

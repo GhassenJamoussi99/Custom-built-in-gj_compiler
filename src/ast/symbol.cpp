@@ -4,8 +4,9 @@
 #include "log.h"
 #include "symbol.h"
 #include "scope.h"
+#include "type.h"
 
-Symbol::Symbol(symbol_t kind, struct type *type, std::string name) 
+Symbol::Symbol(symbol_t kind, Type *type, std::string name) 
     : kind(kind), type(type), name(name), which(0), param_count(0) {
     std::string kind_str = Symbol::to_string(kind);
     LOG(INFO) << "Creating symbol: " << name << " of kind: " << kind_str;
@@ -25,7 +26,7 @@ std::string Symbol::to_string(symbol_t symbol) {
 }
 
 // Legacy function for backward compatibility
-Symbol* symbol_create(symbol_t kind, struct type *type, std::string name) {
+Symbol* symbol_create(symbol_t kind, Type *type, std::string name) {
     return new Symbol(kind, type, name);
 }
 

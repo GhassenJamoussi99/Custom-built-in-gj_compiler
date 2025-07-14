@@ -2,8 +2,6 @@
 #ifndef STMT_H
 #define STMT_H
 
-#include "decl.h"
-
 class Decl;
 struct expr;
 

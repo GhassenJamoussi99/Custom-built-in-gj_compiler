@@ -1,8 +1,10 @@
 #ifndef EXPR_H
 #define EXPR_H
 
-#include "symbol.h"
 #include <string>
+
+class Symbol;
+class Type;
 
 typedef enum
 {
@@ -33,7 +35,7 @@ struct expr
 	struct expr *left;
 	struct expr *right;
     Symbol *symbol;
-	struct type *type;
+	Type *type;
 
 	/* used by various leaf exprs */
 	std::string name;
@@ -57,7 +59,7 @@ struct expr *expr_list_append(struct expr *list, struct expr *e);
 std::string expr_to_string(expr_t expr);
 int expr_evaluate(struct expr *e);
 void expr_resolve(struct expr *e);
-struct type *expr_typecheck(struct expr *e);
+Type *expr_typecheck(struct expr *e);
 
 #endif
 

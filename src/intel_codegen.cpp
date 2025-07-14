@@ -10,6 +10,7 @@
 #include "decl.h"
 #include "scope.h"
 #include "helpers.h"
+#include "type.h"
 
 #include "scratch.h"
 #include "symbol.h"

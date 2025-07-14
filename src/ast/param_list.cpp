@@ -6,9 +6,10 @@
 #include "symbol.h"
 #include "scope.h"
 #include "log.h"
+#include "type.h"
 
 // Function to create a new parameter list node
-param_list* param_list_create(std::string name, type *type, param_list *next) {
+param_list* param_list_create(std::string name, Type *type, param_list *next) {
     param_list* p = new param_list;
     if (!p) {
         std::cerr << "Error: Out of memory" << std::endl;

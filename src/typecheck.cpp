@@ -9,7 +9,7 @@
 #include "scope.h"
 #include "scratch.h"
 #include "typecheck.h"
-
+#include "param_list.h"
 #include "log.h"
 #include "asm_log.h"
 
@@ -19,7 +19,7 @@ void decl_typecheck(Decl *d) {
     if (!d) return;
 
     if (d->value) {
-        struct type *t;
+        Type *t;
         t = expr_typecheck(d->value);
         if (!type_equals(t, d->decl_symbol->type)) {
             std::cerr << "Type error: Declaration type does not match the type of the assigned value. Declaration type: " 
@@ -39,7 +39,7 @@ void decl_typecheck(Decl *d) {
 }
 
 void stmt_typecheck(Stmt *s) {
-    struct type *t = nullptr;
+    Type *t = nullptr;
 
     if (!s) return;
 
@@ -143,13 +143,13 @@ void stmt_typecheck(Stmt *s) {
     }
 }
 
-struct type *expr_typecheck(struct expr *e)
+Type *expr_typecheck(struct expr *e)
 {
     LOG(DEBUG) << "expr::expr_typecheck";
 
-    struct type *lt = nullptr;
-    struct type *rt = nullptr;
-    struct type *result = NULL;
+    Type *lt = nullptr;
+    Type *rt = nullptr;
+    Type *result = NULL;
 
     if (!e) {
         LOG(DEBUG) << "expr_typecheck: Expression is NULL";

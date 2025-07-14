@@ -1,8 +1,11 @@
 #ifndef TYPE_H
 #define TYPE_H
 
-#include "param_list.h"
 #include <array>
+#include <string>
+
+// Forward declaration
+struct param_list;
 
 typedef enum {
 	TYPE_VOID,
@@ -13,17 +16,25 @@ typedef enum {
 	TYPE_FUNCTION
 } type_t;
 
-struct type {
+class Type {
+public:
 	type_t kind;
 	struct param_list *params;
-	struct type *subtype;
+	Type *subtype;
+
+	Type(type_t kind, Type *subtype, struct param_list *params);
+	static Type* create(type_t kind, Type *subtype, struct param_list *params);
+	static bool equals(Type *a, Type *b);
+	static Type* copy(Type *t);
+	static void delete_type(Type *t);
+	static std::string to_string(type_t type);
 };
 
-struct type * type_create( type_t kind, struct type *subtype, struct param_list *params );
-bool type_equals( struct type *a, struct type *b );
-struct type * type_copy( struct type *t );
-void type_delete( struct type *t );
+// Legacy functions for backward compatibility
+Type* type_create(type_t kind, Type *subtype, struct param_list *params);
+bool type_equals(Type *a, Type *b);
+Type* type_copy(Type *t);
+void type_delete(Type *t);
 std::string type_to_string(type_t type);
-
 
 #endif

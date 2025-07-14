@@ -8,13 +8,14 @@
 #include "symbol.h"
 #include "scope.h"
 #include "scratch.h"
+#include "param_list.h"
 
 #include "log.h"
 #include "asm_log.h"
 
 extern int scope_stack_local_var_counts[STACK_MAX];
 
-Decl::Decl(const std::string& name, type* type, expr* value, Stmt* code, Decl* next)
+Decl::Decl(const std::string& name, Type* type, expr* value, Stmt* code, Decl* next)
     : name(name), decl_type(type), value(value), code(code), decl_symbol(nullptr), next(next), local_var_count(0)
 {}
 

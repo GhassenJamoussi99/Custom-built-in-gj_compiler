@@ -1,6 +1,7 @@
 %code requires {
     class Decl;
     class Stmt;
+    class Type;
 }
 
 /* C PREAMBLE CODE */
@@ -16,6 +17,7 @@
 #include "stmt.h"
 #include "symbol.h"
 #include "type.h"
+#include "param_list.h"
 #include "semantic_routines.h"
 
 #include "intel_codegen.h"
@@ -53,7 +55,7 @@ struct expr *parser_result;
     struct expr *expr_ptr;
     Decl *decl;
     Stmt *stmt;
-    struct type *type;
+    Type *type;
     struct param_list *param;
     char* expr_id;
     struct expr *string_literal;
