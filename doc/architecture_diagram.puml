@@ -1,0 +1,229 @@
+@startuml Custom Compiler Architecture
+
+!define RECTANGLE class
+
+' AST Classes
+RECTANGLE Type {
+    + type_t kind
+    + Type* subtype
+    + param_list* params
+    --
+    + Type(type_t, Type*, param_list*)
+    + {static} Type* create(type_t, Type*, param_list*)
+    + {static} bool equals(Type*, Type*)
+    + {static} Type* copy(Type*)
+    + {static} void delete_type(Type*)
+    + {static} string to_string(type_t)
+}
+
+RECTANGLE Expr {
+    + expr_t kind
+    + Expr* left
+    + Expr* right
+    + Symbol* symbol
+    + Type* type
+    + string name
+    + int literal_value
+    + char char_literal
+    + string string_literal
+    + bool boolean_literal
+    + int reg
+    --
+    + Expr(expr_t, Expr*, Expr*)
+    + {static} Expr* create(expr_t, Expr*, Expr*)
+    + {static} Expr* create_name(string)
+    + {static} Expr* create_integer_literal(int)
+    + {static} Expr* create_boolean_literal(bool)
+    + {static} Expr* create_char_literal(char)
+    + {static} Expr* create_string_literal(string)
+    + {static} Expr* list_create(Expr*)
+    + {static} Expr* list_append(Expr*, Expr*)
+    + {static} string to_string(expr_t)
+    + {static} int evaluate(Expr*)
+    + {static} void resolve(Expr*)
+}
+
+RECTANGLE Stmt {
+    + stmt_t kind
+    + Decl* decl
+    + Expr* init_expr
+    + Expr* expr_value
+    + Expr* next_expr
+    + Stmt* body
+    + Stmt* else_body
+    + Stmt* next
+    --
+    + Stmt(stmt_t, Decl*, Expr*, Expr*, Expr*, Stmt*, Stmt*, Stmt*)
+    + {static} Stmt* create_if_else(Expr*, Stmt*, Stmt*)
+    + {static} Stmt* list_append(Stmt*, Stmt*)
+    + void resolve()
+    + void typecheck()
+    + {static} string to_string(stmt_t)
+}
+
+RECTANGLE Decl {
+    + string name
+    + Type* decl_type
+    + Expr* value
+    + Stmt* code
+    + Symbol* decl_symbol
+    + Decl* next
+    + int local_var_count
+    --
+    + Decl(string&, Type*, Expr*, Stmt*, Decl*)
+    + void resolve()
+    + void typecheck()
+}
+
+RECTANGLE Symbol {
+    + symbol_t kind
+    + Type* type
+    + string name
+    + int which
+    + int param_count
+    --
+    + Symbol(symbol_t, Type*, string)
+    + {static} string to_string(symbol_t)
+}
+
+RECTANGLE param_list {
+    + string name
+    + Type* type
+    + Symbol* symbol
+    + param_list* next
+}
+
+' Main Components
+RECTANGLE compiler {
+    --
+    + void compile()
+}
+
+RECTANGLE InputReader {
+    + string filename
+    --
+    + bool openFile()
+}
+
+' Enums
+enum type_t {
+    TYPE_VOID
+    TYPE_BOOLEAN
+    TYPE_CHARACTER
+    TYPE_INTEGER
+    TYPE_STRING
+    TYPE_FUNCTION
+}
+
+enum expr_t {
+    EXPR_ADD
+    EXPR_SUBTRACT
+    EXPR_DIVIDE
+    EXPR_CALL
+    EXPR_MULTIPLY
+    EXPR_ARG
+    EXPR_NAME
+    EXPR_ASSIGN
+    EXPR_INTEGER_LITERAL
+    EXPR_CHAR_LITERAL
+    EXPR_BOOL_LITERAL
+    EXPR_STRING_LITERAL
+    EXPR_EQ
+    EXPR_NEQ
+    EXPR_LT
+    EXPR_GT
+    EXPR_LEQ
+    EXPR_GEQ
+}
+
+enum stmt_t {
+    STMT_DECL
+    STMT_EXPR
+    STMT_IF_ELSE
+    STMT_FOR
+    STMT_PRINT
+    STMT_WHILE
+    STMT_FUNCTION
+    STMT_RETURN
+    STMT_BLOCK
+}
+
+enum symbol_t {
+    SYMBOL_LOCAL
+    SYMBOL_PARAM
+    SYMBOL_GLOBAL
+}
+
+' Relationships
+Expr ||--o{ Expr : "left/right"
+Expr ||--o{ Type : "type"
+Expr ||--o{ Symbol : "symbol"
+
+Stmt ||--o{ Stmt : "body/else_body/next"
+Stmt ||--o{ Decl : "decl"
+Stmt ||--o{ Expr : "init_expr/expr_value/next_expr"
+
+Decl ||--o{ Decl : "next"
+Decl ||--o{ Type : "decl_type"
+Decl ||--o{ Expr : "value"
+Decl ||--o{ Stmt : "code"
+Decl ||--o{ Symbol : "decl_symbol"
+
+Symbol ||--o{ Type : "type"
+
+Type ||--o{ Type : "subtype"
+Type ||--o{ param_list : "params"
+
+param_list ||--o{ param_list : "next"
+param_list ||--o{ Type : "type"
+param_list ||--o{ Symbol : "symbol"
+
+' Function groups
+package "Type Checking" {
+    note as N1
+        decl_typecheck(Decl*)
+        expr_typecheck(Expr*)
+        stmt_typecheck(Stmt*)
+    end note
+}
+
+package "Semantic Analysis" {
+    note as N2
+        scope_enter()
+        scope_exit()
+        scope_lookup(string)
+        scope_bind(string, Symbol*)
+        constant_fold_expr(Expr*)
+        constant_fold_stmt(Stmt*)
+        constant_fold_decls(Decl*)
+    end note
+}
+
+package "Code Generation" {
+    note as N3
+        decl_codegen(Decl*)
+        stmt_codegen(int, Stmt*)
+        expr_codegen(int, Expr*)
+        decl_finish_codegen()
+        symbol_codegen(Symbol*)
+    end note
+}
+
+package "Visualization" {
+    note as N4
+        print_type_dot(Type*)
+        print_param_list_dot(param_list*)
+        print_ast_dot(Expr*)
+        print_stmt_dot(Stmt*)
+        print_decl_list_dot(Decl*)
+    end note
+}
+
+' Main flow
+compiler --> InputReader : uses
+compiler --> N1 : type checking
+compiler --> N2 : semantic analysis
+compiler --> N3 : code generation
+compiler --> N4 : visualization
+
+@enduml 

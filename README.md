@@ -89,6 +89,10 @@ In `gj_compiler`, basic optimization techniques may be introduced later in devel
 
 The code generator translates the IR into **assembly language**, suitable for the target architecture. This is the final step before feeding the code into an assembler (e.g., `as`) to produce object files.
 
+## Architecture Diagram for gj_compiler
+
+![Architecture](<doc/Custom Compiler Architecture.png>)
+
 ## ✅ Prerequisites
 
 Before launching the program, ensure the following tools are installed:
