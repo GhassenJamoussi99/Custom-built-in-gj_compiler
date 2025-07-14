@@ -87,7 +87,7 @@
 extern int yylex();
 extern char *yytext;
 
-std::map<std::string, struct expr *> symbolTable; // Use std::string for symbol table keys
+std::map<std::string, Expr *> symbolTable; // Use std::string for symbol table keys
 
 int yyerror(const char *s) {
     extern char *yytext;
@@ -102,7 +102,7 @@ void print_symbol_table() {
     }
 }
 
-struct expr *parser_result;
+Expr *parser_result;
 
 #line 108 "external/parser.cpp"
 

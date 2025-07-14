@@ -233,7 +233,7 @@ void stmt_codegen(int depth, Stmt *s)
         LOG(DEBUG) << "stmt_codegen::Generating code for STMT_PRINT";
 
         // Initialize variables
-        expr *curr_arg = s->expr_value;
+        Expr *curr_arg = s->expr_value;
         int arg_count = 0;
         std::string print_format = "";
         bool lit_vals = false;
@@ -379,7 +379,7 @@ void stmt_codegen(int depth, Stmt *s)
     stmt_codegen(depth, s->next);
 }
 
-void expr_codegen(int depth, struct expr *e)
+void expr_codegen(int depth, Expr *e)
 {
     if (!e)
         return;
@@ -486,7 +486,7 @@ void expr_codegen(int depth, struct expr *e)
     case EXPR_CALL:
     {
         LOG(INFO) << "expr_codegen::EXPR_CALL";
-        struct expr *arg = nullptr;
+        Expr *arg = nullptr;
 
         // Evaluate arguments in reverse order
         std::vector<int> arg_regs;

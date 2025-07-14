@@ -21,7 +21,7 @@ std::string generate_node_label(const std::string& base, int id) {
     return base + "_" + std::to_string(id);
 }
 
-void print_expr_dot(struct expr* e) {
+void print_expr_dot(Expr* e) {
     if (!e) return;
 
     std::string node_label = generate_node_label("EXPR", node_counter++);

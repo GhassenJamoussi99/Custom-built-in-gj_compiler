@@ -2,6 +2,7 @@
     class Decl;
     class Stmt;
     class Type;
+    class Expr;
 }
 
 /* C PREAMBLE CODE */
@@ -29,7 +30,7 @@
 extern int yylex();
 extern char *yytext;
 
-std::map<std::string, struct expr *> symbolTable; // Use std::string for symbol table keys
+std::map<std::string, Expr *> symbolTable; // Use std::string for symbol table keys
 std::stringstream dataSection; // To collect .data section entries
 
 int yyerror(const char *s) {
@@ -45,20 +46,20 @@ void print_symbol_table() {
     }
 }
 
-struct expr *parser_result;
+Expr *parser_result;
 %}
 
 /* declarations */
 %debug  /* Enable Bison debug mode */
 
 %union {
-    struct expr *expr_ptr;
+    Expr *expr_ptr;
     Decl *decl;
     Stmt *stmt;
     Type *type;
     struct param_list *param;
     char* expr_id;
-    struct expr *string_literal;
+    Expr *string_literal;
 }
 
 %token <expr_id> TOKEN_ID
@@ -179,11 +180,11 @@ for_assignment : assignment
 assignment
     : TOKEN_ID TOKEN_ASSIGN expr   { $$ = expr_create(EXPR_ASSIGN, expr_create_name(std::string($1)), $3); }
     | TOKEN_ID TOKEN_INCREMENT     { 
-        struct expr *new_expr = expr_create(EXPR_ADD, expr_create_name(std::string($1)), expr_create_integer_literal(1));
+        Expr *new_expr = expr_create(EXPR_ADD, expr_create_name(std::string($1)), expr_create_integer_literal(1));
         $$ = expr_create(EXPR_ASSIGN, expr_create_name(std::string($1)), new_expr); 
       }
     | TOKEN_ID TOKEN_DECREMENT     { 
-        struct expr *new_expr = expr_create(EXPR_SUBTRACT, expr_create_name(std::string($1)), expr_create_integer_literal(1));
+        Expr *new_expr = expr_create(EXPR_SUBTRACT, expr_create_name(std::string($1)), expr_create_integer_literal(1));
         $$ = expr_create(EXPR_ASSIGN, expr_create_name(std::string($1)), new_expr); 
       }
     ;

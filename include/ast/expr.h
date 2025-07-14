@@ -28,12 +28,12 @@ typedef enum
 	EXPR_GEQ
 } expr_t;
 
-struct expr
-{
+class Expr {
+public:
 	/* used by all kinds of exprs */
 	expr_t kind;
-	struct expr *left;
-	struct expr *right;
+	Expr *left;
+	Expr *right;
     Symbol *symbol;
 	Type *type;
 
@@ -45,21 +45,34 @@ struct expr
 	bool boolean_literal;
 
 	int reg; // Register allocated for this expression
+
+	Expr(expr_t kind, Expr *left, Expr *right);
+	static Expr* create(expr_t kind, Expr *left, Expr *right);
+	static Expr* create_name(const std::string n);
+	static Expr* create_integer_literal(int c);
+	static Expr* create_boolean_literal(bool status);
+	static Expr* create_char_literal(char c);
+	static Expr* create_string_literal(const std::string n);
+	static Expr* list_create(Expr *e);
+	static Expr* list_append(Expr *list, Expr *e);
+	static std::string to_string(expr_t expr);
+	static int evaluate(Expr *e);
+	static void resolve(Expr *e);
 };
 
-struct expr *expr_create(expr_t kind, struct expr *left, struct expr *right);
-struct expr *expr_create_name(const std::string n);
-struct expr *expr_create_integer_literal(int c);
-struct expr *expr_create_boolean_literal(bool status);
-struct expr *expr_create_char_literal(char c);
-struct expr *expr_create_string_literal(const std::string n);
-struct expr *expr_list_create(struct expr *e);
-struct expr *expr_list_append(struct expr *list, struct expr *e);
-
+// Legacy functions for backward compatibility
+Expr* expr_create(expr_t kind, Expr *left, Expr *right);
+Expr* expr_create_name(const std::string n);
+Expr* expr_create_integer_literal(int c);
+Expr* expr_create_boolean_literal(bool status);
+Expr* expr_create_char_literal(char c);
+Expr* expr_create_string_literal(const std::string n);
+Expr* expr_list_create(Expr *e);
+Expr* expr_list_append(Expr *list, Expr *e);
 std::string expr_to_string(expr_t expr);
-int expr_evaluate(struct expr *e);
-void expr_resolve(struct expr *e);
-Type *expr_typecheck(struct expr *e);
+int expr_evaluate(Expr *e);
+void expr_resolve(Expr *e);
+Type *expr_typecheck(Expr *e);
 
 #endif
 

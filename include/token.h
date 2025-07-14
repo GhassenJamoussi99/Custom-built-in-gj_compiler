@@ -50,8 +50,9 @@ extern int yydebug;
     class Decl;
     class Stmt;
     class Type;
+    class Expr;
 
-#line 55 "include/token.h"
+#line 56 "include/token.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -107,17 +108,17 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 54 "assets/parser.bison"
+#line 55 "assets/parser.bison"
 
-    struct expr *expr_ptr;
+    Expr *expr_ptr;
     Decl *decl;
     Stmt *stmt;
     Type *type;
     struct param_list *param;
     char* expr_id;
-    struct expr *string_literal;
+    Expr *string_literal;
 
-#line 121 "include/token.h"
+#line 122 "include/token.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

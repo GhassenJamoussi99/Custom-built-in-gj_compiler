@@ -13,7 +13,7 @@ std::string indent(int depth)
 }
 
 // Recursive function to print the AST
-void print_ast(struct expr *ast, int depth)
+void print_ast(Expr *ast, int depth)
 {
     if (!ast)
     {

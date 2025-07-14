@@ -67,7 +67,7 @@
 
 
 /* First part of user prologue.  */
-#line 8 "assets/parser.bison"
+#line 9 "assets/parser.bison"
 
 #include <stdio.h>
 #include <iostream>
@@ -92,7 +92,7 @@
 extern int yylex();
 extern char *yytext;
 
-std::map<std::string, struct expr *> symbolTable; // Use std::string for symbol table keys
+std::map<std::string, Expr *> symbolTable; // Use std::string for symbol table keys
 std::stringstream dataSection; // To collect .data section entries
 
 int yyerror(const char *s) {
@@ -108,7 +108,7 @@ void print_symbol_table() {
     }
 }
 
-struct expr *parser_result;
+Expr *parser_result;
 
 #line 114 "tools/parser.cpp"
 
@@ -587,12 +587,12 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    82,    82,   112,   113,   117,   118,   119,   128,   129,
-     130,   131,   135,   136,   137,   141,   145,   146,   147,   151,
-     152,   153,   154,   155,   156,   160,   166,   167,   169,   173,
-     176,   180,   181,   185,   192,   193,   194,   195,   199,   200,
-     201,   202,   203,   204,   208,   209,   210,   211,   215,   219,
-     220,   221,   225,   226,   227,   228,   229,   230,   231
+       0,    83,    83,   113,   114,   118,   119,   120,   129,   130,
+     131,   132,   136,   137,   138,   142,   146,   147,   148,   152,
+     153,   154,   155,   156,   157,   161,   167,   168,   170,   174,
+     177,   181,   182,   186,   193,   194,   195,   196,   200,   201,
+     202,   203,   204,   205,   209,   210,   211,   212,   216,   220,
+     221,   222,   226,   227,   228,   229,   230,   231,   232
 };
 #endif
 
@@ -1239,7 +1239,7 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* program: decl_list  */
-#line 82 "assets/parser.bison"
+#line 83 "assets/parser.bison"
                                                                     {
                                                                       (yyvsp[0].decl)->resolve();
                                                                       (yyvsp[0].decl)->typecheck();
@@ -1271,31 +1271,31 @@ yyreduce:
     break;
 
   case 3: /* decl_list: decl decl_list  */
-#line 112 "assets/parser.bison"
+#line 113 "assets/parser.bison"
                                                                     { (yyval.decl) = (yyvsp[-1].decl); (yyvsp[-1].decl)->next = (yyvsp[0].decl); }
 #line 1277 "tools/parser.cpp"
     break;
 
   case 4: /* decl_list: %empty  */
-#line 113 "assets/parser.bison"
+#line 114 "assets/parser.bison"
                                                                     { (yyval.decl) = nullptr; }
 #line 1283 "tools/parser.cpp"
     break;
 
   case 5: /* decl: TOKEN_ID TOKEN_DPOINTS type TOKEN_SEMI  */
-#line 117 "assets/parser.bison"
+#line 118 "assets/parser.bison"
                                              { (yyval.decl) = new Decl(std::string((yyvsp[-3].expr_id)), (yyvsp[-1].type), nullptr, nullptr, nullptr); }
 #line 1289 "tools/parser.cpp"
     break;
 
   case 6: /* decl: TOKEN_ID TOKEN_DPOINTS type TOKEN_ASSIGN expr TOKEN_SEMI  */
-#line 118 "assets/parser.bison"
+#line 119 "assets/parser.bison"
                                                                { (yyval.decl) = new Decl(std::string((yyvsp[-5].expr_id)), (yyvsp[-3].type), (yyvsp[-1].expr_ptr), nullptr, nullptr); }
 #line 1295 "tools/parser.cpp"
     break;
 
   case 7: /* decl: TOKEN_ID TOKEN_DPOINTS TOKEN_FUNCTION type TOKEN_LPAREN param_list TOKEN_RPAREN TOKEN_ASSIGN stmt_block  */
-#line 119 "assets/parser.bison"
+#line 120 "assets/parser.bison"
                                                                                                               { 
                     (yyval.decl) = new Decl(std::string((yyvsp[-8].expr_id)),
                       type_create(TYPE_FUNCTION, (yyvsp[-5].type), (yyvsp[-3].param)),
@@ -1306,307 +1306,307 @@ yyreduce:
     break;
 
   case 8: /* type: TOKEN_VOID  */
-#line 128 "assets/parser.bison"
+#line 129 "assets/parser.bison"
                                                                     { (yyval.type) = type_create(TYPE_VOID, nullptr, nullptr); }
 #line 1312 "tools/parser.cpp"
     break;
 
   case 9: /* type: TOKEN_INT_TYPE  */
-#line 129 "assets/parser.bison"
+#line 130 "assets/parser.bison"
                                                                     { (yyval.type) = type_create(TYPE_INTEGER, nullptr, nullptr); }
 #line 1318 "tools/parser.cpp"
     break;
 
   case 10: /* type: TOKEN_BOOLEAN_TYPE  */
-#line 130 "assets/parser.bison"
+#line 131 "assets/parser.bison"
                                                                     { (yyval.type) = type_create(TYPE_BOOLEAN, nullptr, nullptr); }
 #line 1324 "tools/parser.cpp"
     break;
 
   case 11: /* type: TOKEN_STRING_TYPE  */
-#line 131 "assets/parser.bison"
+#line 132 "assets/parser.bison"
                                                                     { (yyval.type) = type_create(TYPE_STRING, nullptr, nullptr); }
 #line 1330 "tools/parser.cpp"
     break;
 
   case 12: /* param_list: %empty  */
-#line 135 "assets/parser.bison"
+#line 136 "assets/parser.bison"
                                                                     { (yyval.param) = nullptr; }
 #line 1336 "tools/parser.cpp"
     break;
 
   case 13: /* param_list: param_decl  */
-#line 136 "assets/parser.bison"
+#line 137 "assets/parser.bison"
                                                                     { (yyval.param) = (yyvsp[0].param); }
 #line 1342 "tools/parser.cpp"
     break;
 
   case 14: /* param_list: param_list TOKEN_COMMA param_decl  */
-#line 137 "assets/parser.bison"
+#line 138 "assets/parser.bison"
                                                                     { (yyval.param) = param_list_append((yyvsp[-2].param), (yyvsp[0].param)); }
 #line 1348 "tools/parser.cpp"
     break;
 
   case 15: /* param_decl: TOKEN_ID TOKEN_DPOINTS type  */
-#line 141 "assets/parser.bison"
+#line 142 "assets/parser.bison"
                                                                     { (yyval.param) = param_list_create(std::string((yyvsp[-2].expr_id)), (yyvsp[0].type), nullptr); }
 #line 1354 "tools/parser.cpp"
     break;
 
   case 16: /* stmt: TOKEN_IF TOKEN_LPAREN expr TOKEN_RPAREN normal_stmt  */
-#line 145 "assets/parser.bison"
+#line 146 "assets/parser.bison"
                                                                                  { (yyval.stmt) = Stmt::create_if_else((yyvsp[-2].expr_ptr), (yyvsp[0].stmt), nullptr);   LOG(DEBUG) << "stmt_create_if_else:: IF_STMT";}
 #line 1360 "tools/parser.cpp"
     break;
 
   case 17: /* stmt: TOKEN_IF TOKEN_LPAREN expr TOKEN_RPAREN normal_stmt TOKEN_ELSE normal_stmt  */
-#line 146 "assets/parser.bison"
+#line 147 "assets/parser.bison"
                                                                                  { (yyval.stmt) = Stmt::create_if_else((yyvsp[-4].expr_ptr), (yyvsp[-2].stmt), (yyvsp[0].stmt));        LOG(DEBUG) << "stmt_create_if_else::IF_ELSE_STMT";}
 #line 1366 "tools/parser.cpp"
     break;
 
   case 19: /* normal_stmt: TOKEN_WHILE TOKEN_LPAREN expr TOKEN_RPAREN stmt  */
-#line 151 "assets/parser.bison"
+#line 152 "assets/parser.bison"
                                                                                                 { (yyval.stmt) = new Stmt(STMT_WHILE, nullptr, nullptr, (yyvsp[-2].expr_ptr), nullptr, (yyvsp[0].stmt), nullptr, nullptr); }
 #line 1372 "tools/parser.cpp"
     break;
 
   case 20: /* normal_stmt: TOKEN_FOR TOKEN_LPAREN for_assignment TOKEN_SEMI expr TOKEN_SEMI assignment TOKEN_RPAREN stmt  */
-#line 152 "assets/parser.bison"
+#line 153 "assets/parser.bison"
                                                                                                     { (yyval.stmt) = new Stmt(STMT_FOR, nullptr, (yyvsp[-6].expr_ptr), (yyvsp[-4].expr_ptr), (yyvsp[-2].expr_ptr), (yyvsp[0].stmt), nullptr, nullptr); }
 #line 1378 "tools/parser.cpp"
     break;
 
   case 21: /* normal_stmt: TOKEN_PRINT call_args TOKEN_SEMI  */
-#line 153 "assets/parser.bison"
+#line 154 "assets/parser.bison"
                                                                                                 { (yyval.stmt) = new Stmt(STMT_PRINT, nullptr, nullptr, (yyvsp[-1].expr_ptr), nullptr, nullptr, nullptr, nullptr); }
 #line 1384 "tools/parser.cpp"
     break;
 
   case 22: /* normal_stmt: TOKEN_RETURN expr TOKEN_SEMI  */
-#line 154 "assets/parser.bison"
+#line 155 "assets/parser.bison"
                                                                                                 { (yyval.stmt) = new Stmt(STMT_RETURN, nullptr, nullptr, (yyvsp[-1].expr_ptr), nullptr, nullptr, nullptr, nullptr); }
 #line 1390 "tools/parser.cpp"
     break;
 
   case 23: /* normal_stmt: assignment TOKEN_SEMI  */
-#line 155 "assets/parser.bison"
+#line 156 "assets/parser.bison"
                                                                                                 { (yyval.stmt) = new Stmt(STMT_EXPR, nullptr, nullptr, (yyvsp[-1].expr_ptr), nullptr, nullptr, nullptr, nullptr); }
 #line 1396 "tools/parser.cpp"
     break;
 
   case 24: /* normal_stmt: stmt_block  */
-#line 156 "assets/parser.bison"
+#line 157 "assets/parser.bison"
                                                                                                 { (yyval.stmt) = new Stmt(STMT_BLOCK, nullptr, nullptr, nullptr, nullptr, (yyvsp[0].stmt), nullptr, nullptr); }
 #line 1402 "tools/parser.cpp"
     break;
 
   case 25: /* stmt_block: TOKEN_LBRACE stmt_list TOKEN_RBRACE  */
-#line 161 "assets/parser.bison"
+#line 162 "assets/parser.bison"
         { (yyval.stmt) = (yyvsp[-1].stmt); }
 #line 1408 "tools/parser.cpp"
     break;
 
   case 26: /* stmt_list: %empty  */
-#line 166 "assets/parser.bison"
+#line 167 "assets/parser.bison"
         { (yyval.stmt) = nullptr; }
 #line 1414 "tools/parser.cpp"
     break;
 
   case 27: /* stmt_list: stmt_list stmt  */
-#line 168 "assets/parser.bison"
+#line 169 "assets/parser.bison"
         { (yyval.stmt) = Stmt::list_append((yyvsp[-1].stmt), (yyvsp[0].stmt)); }
 #line 1420 "tools/parser.cpp"
     break;
 
   case 28: /* stmt_list: stmt_list decl  */
-#line 170 "assets/parser.bison"
+#line 171 "assets/parser.bison"
         { (yyval.stmt) = Stmt::list_append((yyvsp[-1].stmt), new Stmt(STMT_DECL, (yyvsp[0].decl), nullptr, nullptr, nullptr, nullptr, nullptr, nullptr)); }
 #line 1426 "tools/parser.cpp"
     break;
 
   case 29: /* for_assignment: assignment  */
-#line 174 "assets/parser.bison"
+#line 175 "assets/parser.bison"
                 { (yyval.expr_ptr) = (yyvsp[0].expr_ptr); }
 #line 1432 "tools/parser.cpp"
     break;
 
   case 30: /* for_assignment: %empty  */
-#line 176 "assets/parser.bison"
+#line 177 "assets/parser.bison"
                     { (yyval.expr_ptr) = NULL; }
 #line 1438 "tools/parser.cpp"
     break;
 
   case 31: /* assignment: TOKEN_ID TOKEN_ASSIGN expr  */
-#line 180 "assets/parser.bison"
+#line 181 "assets/parser.bison"
                                    { (yyval.expr_ptr) = expr_create(EXPR_ASSIGN, expr_create_name(std::string((yyvsp[-2].expr_id))), (yyvsp[0].expr_ptr)); }
 #line 1444 "tools/parser.cpp"
     break;
 
   case 32: /* assignment: TOKEN_ID TOKEN_INCREMENT  */
-#line 181 "assets/parser.bison"
+#line 182 "assets/parser.bison"
                                    { 
-        struct expr *new_expr = expr_create(EXPR_ADD, expr_create_name(std::string((yyvsp[-1].expr_id))), expr_create_integer_literal(1));
+        Expr *new_expr = expr_create(EXPR_ADD, expr_create_name(std::string((yyvsp[-1].expr_id))), expr_create_integer_literal(1));
         (yyval.expr_ptr) = expr_create(EXPR_ASSIGN, expr_create_name(std::string((yyvsp[-1].expr_id))), new_expr); 
       }
 #line 1453 "tools/parser.cpp"
     break;
 
   case 33: /* assignment: TOKEN_ID TOKEN_DECREMENT  */
-#line 185 "assets/parser.bison"
+#line 186 "assets/parser.bison"
                                    { 
-        struct expr *new_expr = expr_create(EXPR_SUBTRACT, expr_create_name(std::string((yyvsp[-1].expr_id))), expr_create_integer_literal(1));
+        Expr *new_expr = expr_create(EXPR_SUBTRACT, expr_create_name(std::string((yyvsp[-1].expr_id))), expr_create_integer_literal(1));
         (yyval.expr_ptr) = expr_create(EXPR_ASSIGN, expr_create_name(std::string((yyvsp[-1].expr_id))), new_expr); 
       }
 #line 1462 "tools/parser.cpp"
     break;
 
   case 34: /* expr: expr TOKEN_PLUS term  */
-#line 192 "assets/parser.bison"
+#line 193 "assets/parser.bison"
                                       { (yyval.expr_ptr) = expr_create(EXPR_ADD, (yyvsp[-2].expr_ptr), (yyvsp[0].expr_ptr));}
 #line 1468 "tools/parser.cpp"
     break;
 
   case 35: /* expr: expr TOKEN_MINUS term  */
-#line 193 "assets/parser.bison"
+#line 194 "assets/parser.bison"
                                       { (yyval.expr_ptr) = expr_create(EXPR_SUBTRACT, (yyvsp[-2].expr_ptr), (yyvsp[0].expr_ptr)); }
 #line 1474 "tools/parser.cpp"
     break;
 
   case 36: /* expr: cond  */
-#line 194 "assets/parser.bison"
+#line 195 "assets/parser.bison"
                                       { (yyval.expr_ptr) = (yyvsp[0].expr_ptr); }
 #line 1480 "tools/parser.cpp"
     break;
 
   case 37: /* expr: term  */
-#line 195 "assets/parser.bison"
+#line 196 "assets/parser.bison"
                                       { (yyval.expr_ptr) = (yyvsp[0].expr_ptr); }
 #line 1486 "tools/parser.cpp"
     break;
 
   case 38: /* cond: expr TOKEN_EQ term  */
-#line 199 "assets/parser.bison"
+#line 200 "assets/parser.bison"
                          { (yyval.expr_ptr) = expr_create(EXPR_EQ, (yyvsp[-2].expr_ptr), (yyvsp[0].expr_ptr)); }
 #line 1492 "tools/parser.cpp"
     break;
 
   case 39: /* cond: expr TOKEN_NEQ term  */
-#line 200 "assets/parser.bison"
+#line 201 "assets/parser.bison"
                           { (yyval.expr_ptr) = expr_create(EXPR_NEQ, (yyvsp[-2].expr_ptr), (yyvsp[0].expr_ptr)); }
 #line 1498 "tools/parser.cpp"
     break;
 
   case 40: /* cond: expr TOKEN_LT term  */
-#line 201 "assets/parser.bison"
+#line 202 "assets/parser.bison"
                          { (yyval.expr_ptr) = expr_create(EXPR_LT, (yyvsp[-2].expr_ptr), (yyvsp[0].expr_ptr));}
 #line 1504 "tools/parser.cpp"
     break;
 
   case 41: /* cond: expr TOKEN_GT term  */
-#line 202 "assets/parser.bison"
+#line 203 "assets/parser.bison"
                          { (yyval.expr_ptr) = expr_create(EXPR_GT, (yyvsp[-2].expr_ptr), (yyvsp[0].expr_ptr)); }
 #line 1510 "tools/parser.cpp"
     break;
 
   case 42: /* cond: expr TOKEN_LEQ term  */
-#line 203 "assets/parser.bison"
+#line 204 "assets/parser.bison"
                           { (yyval.expr_ptr) = expr_create(EXPR_LEQ, (yyvsp[-2].expr_ptr), (yyvsp[0].expr_ptr)); }
 #line 1516 "tools/parser.cpp"
     break;
 
   case 43: /* cond: expr TOKEN_GEQ term  */
-#line 204 "assets/parser.bison"
+#line 205 "assets/parser.bison"
                           { (yyval.expr_ptr) = expr_create(EXPR_GEQ, (yyvsp[-2].expr_ptr), (yyvsp[0].expr_ptr)); }
 #line 1522 "tools/parser.cpp"
     break;
 
   case 44: /* term: term TOKEN_MUL factor  */
-#line 208 "assets/parser.bison"
+#line 209 "assets/parser.bison"
                                      { (yyval.expr_ptr) = expr_create(EXPR_MULTIPLY,(yyvsp[-2].expr_ptr),(yyvsp[0].expr_ptr)); }
 #line 1528 "tools/parser.cpp"
     break;
 
   case 45: /* term: term TOKEN_DIV factor  */
-#line 209 "assets/parser.bison"
+#line 210 "assets/parser.bison"
                                      { (yyval.expr_ptr) = expr_create(EXPR_DIVIDE,(yyvsp[-2].expr_ptr),(yyvsp[0].expr_ptr)); }
 #line 1534 "tools/parser.cpp"
     break;
 
   case 46: /* term: factor  */
-#line 210 "assets/parser.bison"
+#line 211 "assets/parser.bison"
                                      { (yyval.expr_ptr) = (yyvsp[0].expr_ptr); }
 #line 1540 "tools/parser.cpp"
     break;
 
   case 47: /* term: call  */
-#line 211 "assets/parser.bison"
+#line 212 "assets/parser.bison"
                                      { (yyval.expr_ptr) = (yyvsp[0].expr_ptr); }
 #line 1546 "tools/parser.cpp"
     break;
 
   case 48: /* call: TOKEN_ID TOKEN_LPAREN call_args TOKEN_RPAREN  */
-#line 215 "assets/parser.bison"
+#line 216 "assets/parser.bison"
                                                    { (yyval.expr_ptr) = expr_create(EXPR_CALL, expr_create_name(std::string((yyvsp[-3].expr_id))), (yyvsp[-1].expr_ptr)); }
 #line 1552 "tools/parser.cpp"
     break;
 
   case 49: /* call_args: %empty  */
-#line 219 "assets/parser.bison"
+#line 220 "assets/parser.bison"
                                      { (yyval.expr_ptr) = nullptr; }
 #line 1558 "tools/parser.cpp"
     break;
 
   case 50: /* call_args: expr  */
-#line 220 "assets/parser.bison"
+#line 221 "assets/parser.bison"
                                      { (yyval.expr_ptr) = expr_list_create((yyvsp[0].expr_ptr)); }
 #line 1564 "tools/parser.cpp"
     break;
 
   case 51: /* call_args: call_args TOKEN_COMMA expr  */
-#line 221 "assets/parser.bison"
+#line 222 "assets/parser.bison"
                                      { (yyval.expr_ptr) = expr_list_append((yyvsp[-2].expr_ptr), (yyvsp[0].expr_ptr)); }
 #line 1570 "tools/parser.cpp"
     break;
 
   case 52: /* factor: TOKEN_MINUS factor  */
-#line 225 "assets/parser.bison"
+#line 226 "assets/parser.bison"
                                      { (yyval.expr_ptr) = expr_create(EXPR_SUBTRACT, expr_create_integer_literal(0),(yyvsp[0].expr_ptr)); }
 #line 1576 "tools/parser.cpp"
     break;
 
   case 53: /* factor: TOKEN_LPAREN expr TOKEN_RPAREN  */
-#line 226 "assets/parser.bison"
+#line 227 "assets/parser.bison"
                                      { (yyval.expr_ptr) = (yyvsp[-1].expr_ptr); }
 #line 1582 "tools/parser.cpp"
     break;
 
   case 54: /* factor: TOKEN_TRUE  */
-#line 227 "assets/parser.bison"
+#line 228 "assets/parser.bison"
                                      { (yyval.expr_ptr) = expr_create_boolean_literal(true);}
 #line 1588 "tools/parser.cpp"
     break;
 
   case 55: /* factor: TOKEN_FALSE  */
-#line 228 "assets/parser.bison"
+#line 229 "assets/parser.bison"
                                      { (yyval.expr_ptr) = expr_create_boolean_literal(false);}
 #line 1594 "tools/parser.cpp"
     break;
 
   case 56: /* factor: TOKEN_STRING_LITERAL  */
-#line 229 "assets/parser.bison"
+#line 230 "assets/parser.bison"
                                      { (yyval.expr_ptr) = expr_create_string_literal(std::string(yytext)); }
 #line 1600 "tools/parser.cpp"
     break;
 
   case 57: /* factor: TOKEN_INT  */
-#line 230 "assets/parser.bison"
+#line 231 "assets/parser.bison"
                                      { (yyval.expr_ptr) = expr_create_integer_literal(atoi(yytext)); }
 #line 1606 "tools/parser.cpp"
     break;
 
   case 58: /* factor: TOKEN_ID  */
-#line 231 "assets/parser.bison"
+#line 232 "assets/parser.bison"
                                      { (yyval.expr_ptr) = expr_create_name(std::string((yyvsp[0].expr_id))); }
 #line 1612 "tools/parser.cpp"
     break;
@@ -1805,6 +1805,6 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 232 "assets/parser.bison"
+#line 233 "assets/parser.bison"
 
 

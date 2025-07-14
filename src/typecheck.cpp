@@ -143,7 +143,7 @@ void stmt_typecheck(Stmt *s) {
     }
 }
 
-Type *expr_typecheck(struct expr *e)
+Type *expr_typecheck(Expr *e)
 {
     LOG(DEBUG) << "expr::expr_typecheck";
 

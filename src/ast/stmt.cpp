@@ -8,10 +8,10 @@
 #include "asm_log.h"
 #include "scratch.h"
 
-Stmt::Stmt(stmt_t kind, Decl *decl, expr *init_expr, expr *expr_value, expr *next_expr, Stmt *body, Stmt *else_body, Stmt *next)
+Stmt::Stmt(stmt_t kind, Decl *decl, Expr *init_expr, Expr *expr_value, Expr *next_expr, Stmt *body, Stmt *else_body, Stmt *next)
 	: kind(kind), decl(decl), init_expr(init_expr), expr_value(expr_value), next_expr(next_expr), body(body), else_body(else_body), next(next) {}
 
-Stmt* Stmt::create_if_else(expr *expr_value, Stmt *body, Stmt *else_body) {
+Stmt* Stmt::create_if_else(Expr *expr_value, Stmt *body, Stmt *else_body) {
 	return new Stmt(STMT_IF_ELSE, nullptr, nullptr, expr_value, nullptr, body, else_body, nullptr);
 }
 

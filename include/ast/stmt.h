@@ -3,7 +3,7 @@
 #define STMT_H
 
 class Decl;
-struct expr;
+class Expr;
 
 typedef enum {
 	STMT_DECL,
@@ -21,15 +21,15 @@ class Stmt {
 public:
 	stmt_t kind;
 	Decl *decl;
-	expr *init_expr;
-	expr *expr_value;
-	expr *next_expr;
+	Expr *init_expr;
+	Expr *expr_value;
+	Expr *next_expr;
 	Stmt *body;
 	Stmt *else_body;
 	Stmt *next;
 
-	Stmt(stmt_t kind, Decl *decl, expr *init_expr, expr *expr_value, expr *next_expr, Stmt *body, Stmt *else_body, Stmt *next);
-	static Stmt* create_if_else(expr *expr_value, Stmt *body, Stmt *else_body);
+	Stmt(stmt_t kind, Decl *decl, Expr *init_expr, Expr *expr_value, Expr *next_expr, Stmt *body, Stmt *else_body, Stmt *next);
+	static Stmt* create_if_else(Expr *expr_value, Stmt *body, Stmt *else_body);
 	static Stmt* list_append(Stmt *list, Stmt *stmt);
 	void resolve();
 	void typecheck();

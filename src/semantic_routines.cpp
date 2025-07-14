@@ -7,7 +7,7 @@
 #include <string>
 #include <iomanip>
 
-void constant_fold_expr(struct expr *ast)
+void constant_fold_expr(Expr *ast)
 {
     if (!ast)
     {

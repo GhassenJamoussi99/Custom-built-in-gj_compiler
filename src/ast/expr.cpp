@@ -11,75 +11,52 @@
 
 #include "asm_log.h"
 
-struct expr *expr_create(expr_t kind,
-                         struct expr *left,
-                         struct expr *right)
-{
-    expr *e = new expr;
-
-    if (!e)
-    {
-        std::cerr << "EXPR Error: Out of memory" << std::endl;
-        std::exit(1);
-    }
-
-    e->kind = kind;
-    e->left = left;
-    e->right = right;
-    e->symbol = nullptr;
-    e->type = nullptr;
-    e->name = "";
-    e->literal_value = 0;
-    e->char_literal = '\0';
-    e->string_literal = "";
-    e->boolean_literal = false;
-    e->reg = 0;
-
-    return e;
+Expr::Expr(expr_t kind, Expr *left, Expr *right)
+    : kind(kind), left(left), right(right), symbol(nullptr), type(nullptr), 
+      name(""), literal_value(0), char_literal('\0'), string_literal(""), 
+      boolean_literal(false), reg(0) {
 }
 
-struct expr *expr_create_name(const std::string n)
-{
-    struct expr *e = expr_create(EXPR_NAME, 0, 0);
+Expr* Expr::create(expr_t kind, Expr *left, Expr *right) {
+    return new Expr(kind, left, right);
+}
+
+Expr* Expr::create_name(const std::string n) {
+    Expr *e = create(EXPR_NAME, nullptr, nullptr);
     e->name = n;
     return e;
 }
 
-struct expr *expr_create_integer_literal(int c)
-{
-    struct expr *e = expr_create(EXPR_INTEGER_LITERAL, 0, 0);
+Expr* Expr::create_integer_literal(int c) {
+    Expr *e = create(EXPR_INTEGER_LITERAL, nullptr, nullptr);
     e->literal_value = c;
     return e;
 }
 
-struct expr *expr_create_boolean_literal(bool status)
-{
-    struct expr *e = expr_create(EXPR_BOOL_LITERAL, 0, 0);
+Expr* Expr::create_boolean_literal(bool status) {
+    Expr *e = create(EXPR_BOOL_LITERAL, nullptr, nullptr);
     e->boolean_literal = status;
     return e;
 }
 
-struct expr *expr_create_char_literal(char c)
-{
-    struct expr *e = expr_create(EXPR_CHAR_LITERAL, 0, 0);
+Expr* Expr::create_char_literal(char c) {
+    Expr *e = create(EXPR_CHAR_LITERAL, nullptr, nullptr);
     e->char_literal = c;
     return e;
 }
 
-struct expr *expr_create_string_literal(const std::string n)
-{
-    struct expr *e = expr_create(EXPR_STRING_LITERAL, 0, 0);
+Expr* Expr::create_string_literal(const std::string n) {
+    Expr *e = create(EXPR_STRING_LITERAL, nullptr, nullptr);
     e->string_literal = n;
     return e;
 }
 
-int expr_evaluate(struct expr *e)
-{
+int Expr::evaluate(Expr *e) {
     if (!e)
         return 0;
 
-    int l = expr_evaluate(e->left);
-    int r = expr_evaluate(e->right);
+    int l = evaluate(e->left);
+    int r = evaluate(e->right);
 
     switch (e->kind)
     {
@@ -124,24 +101,21 @@ int expr_evaluate(struct expr *e)
     return 0;
 }
 
-struct expr *expr_list_create(struct expr *e)
-{
-    return expr_create(EXPR_ARG, e, nullptr);
+Expr* Expr::list_create(Expr *e) {
+    return create(EXPR_ARG, e, nullptr);
 }
 
-struct expr *expr_list_append(struct expr *list, struct expr *e)
-{
-    struct expr *temp = list;
+Expr* Expr::list_append(Expr *list, Expr *e) {
+    Expr *temp = list;
     while (temp->right)
     {
         temp = temp->right;
     }
-    temp->right = expr_list_create(e);
+    temp->right = list_create(e);
     return list;
 }
 
-void expr_resolve(struct expr *e)
-{
+void Expr::resolve(Expr *e) {
     LOG(INFO) << "expr::expr_resolve";
 
     if (!e)
@@ -155,20 +129,19 @@ void expr_resolve(struct expr *e)
     {
         if (e->left)
         {
-            LOG(INFO) << "Resolving left expression of kind: " << expr_to_string(e->kind);
-            expr_resolve(e->left);
+            LOG(INFO) << "Resolving left expression of kind: " << to_string(e->kind);
+            resolve(e->left);
         }
 
         if (e->right)
         {
-            LOG(INFO) << "Resolving right expression of kind: " << expr_to_string(e->kind);
-            expr_resolve(e->right);
+            LOG(INFO) << "Resolving right expression of kind: " << to_string(e->kind);
+            resolve(e->right);
         }
     }
 }
 
-std::string expr_to_string(expr_t expr)
-{
+std::string Expr::to_string(expr_t expr) {
     switch (expr)
     {
     case EXPR_ADD:
@@ -210,4 +183,49 @@ std::string expr_to_string(expr_t expr)
     default:
         return "UNKNOWN_EXPR";
     }
+}
+
+// Legacy functions for backward compatibility
+Expr* expr_create(expr_t kind, Expr *left, Expr *right) {
+    return Expr::create(kind, left, right);
+}
+
+Expr* expr_create_name(const std::string n) {
+    return Expr::create_name(n);
+}
+
+Expr* expr_create_integer_literal(int c) {
+    return Expr::create_integer_literal(c);
+}
+
+Expr* expr_create_boolean_literal(bool status) {
+    return Expr::create_boolean_literal(status);
+}
+
+Expr* expr_create_char_literal(char c) {
+    return Expr::create_char_literal(c);
+}
+
+Expr* expr_create_string_literal(const std::string n) {
+    return Expr::create_string_literal(n);
+}
+
+Expr* expr_list_create(Expr *e) {
+    return Expr::list_create(e);
+}
+
+Expr* expr_list_append(Expr *list, Expr *e) {
+    return Expr::list_append(list, e);
+}
+
+std::string expr_to_string(expr_t expr) {
+    return Expr::to_string(expr);
+}
+
+int expr_evaluate(Expr *e) {
+    return Expr::evaluate(e);
+}
+
+void expr_resolve(Expr *e) {
+    Expr::resolve(e);
 }

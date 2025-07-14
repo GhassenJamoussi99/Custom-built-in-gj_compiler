@@ -19,8 +19,8 @@ typedef enum {
 class Type {
 public:
 	type_t kind;
-	struct param_list *params;
 	Type *subtype;
+	struct param_list *params;
 
 	Type(type_t kind, Type *subtype, struct param_list *params);
 	static Type* create(type_t kind, Type *subtype, struct param_list *params);

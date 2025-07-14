@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 
-struct expr;
+class Expr;
 class Symbol;
 class Type;
 

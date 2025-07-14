@@ -7,7 +7,7 @@
 
 extern int yyparse();
 extern char *yytext;
-extern struct expr *parser_result;
+extern Expr *parser_result;
 
 void compiler::compile() {
     AsmLog() << ".intel_syntax noprefix";
