@@ -4,3 +4,4 @@ build/*
 *.dot
 *.s
 *.pdf
+*.log
