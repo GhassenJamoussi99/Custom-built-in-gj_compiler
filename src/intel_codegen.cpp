@@ -9,6 +9,7 @@
 #include "stmt.h"
 #include "decl.h"
 #include "scope.h"
+#include "helpers.h"
 
 #include "scratch.h"
 #include "symbol.h"
@@ -19,11 +20,6 @@
 extern std::stringstream dataSection;
 
 static int label_count = 0;
-
-std::string indent(int depth)
-{
-    return std::string(depth * 2, ' ');
-}
 
 std::string create_label()
 {

@@ -1,2 +1,6 @@
 build/*
+.vscode/
+*.out
+*.dot
+*.s
 

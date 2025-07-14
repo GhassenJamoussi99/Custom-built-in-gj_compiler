@@ -8,13 +8,20 @@ Before launching the program, ensure you have the following tools installed:
 - **Bison** - a parser generator that is part of the GNU Project.
 - **Flex** - a tool for generating scanners.
 
-### Installing Bison and Flex
-Bison and Flex can be installed on Ubuntu/Debian-based systems using the following command:
+### 🛠️ Installing Bison, Flex, jq, and Graphviz on Ubuntu/WSL
+
+Install all required packages with a single command:
 
 ```bash
-sudo apt-get update
-sudo apt-get install bison flex
+sudo apt update && sudo apt install -y bison flex jq graphviz
 ```
+
+### ✅ What's included:
+
+* `bison`: Parser generator (used with Flex)
+* `flex`: Lexical analyzer generator
+* `jq`: Command-line JSON processor
+* `graphviz`: Visualization tools (e.g., `dot` command)
 
 ## Development Environment
 This development environment consists of the following key components:

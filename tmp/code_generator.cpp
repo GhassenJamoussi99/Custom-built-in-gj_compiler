@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "code_generator.h"
+#include "intel_codegen.h"
 
 #include "expr.h"
 #include "stmt.h"
@@ -176,121 +177,121 @@ void stmt_codegen(int depth, struct stmt *s) {
 
 
 
-void expr_codegen(int depth, struct expr *e) {
-    if (!e) return;
+// void expr_codegen(int depth, struct expr *e) {
+//     if (!e) return;
 
-    switch (e->kind) {
-        case EXPR_NAME:
-            LOG(INFO) << "expr_codegen::EXPR_NAME";
-            // e->reg = scratch_alloc();
-            // AsmLog() << indent(depth) << "mov " << scratch_name(e->reg) << ", " << symbol_codegen(e->symbol);
-            // LOG(DEBUG) << indent(depth) << "mov " << scratch_name(e->reg) << ", " << symbol_codegen(e->symbol);
-            break;
+//     switch (e->kind) {
+//         case EXPR_NAME:
+//             LOG(INFO) << "expr_codegen::EXPR_NAME";
+//             // e->reg = scratch_alloc();
+//             // AsmLog() << indent(depth) << "mov " << scratch_name(e->reg) << ", " << symbol_codegen(e->symbol);
+//             // LOG(DEBUG) << indent(depth) << "mov " << scratch_name(e->reg) << ", " << symbol_codegen(e->symbol);
+//             break;
 
-        case EXPR_INTEGER_LITERAL:
-            LOG(INFO) << "expr_codegen::EXPR_INTEGER_LITERAL";
-            e->reg = scratch_alloc();
-            AsmLog() << indent(depth) << "mov " << scratch_name(e->reg) << ", " << e->literal_value;
-            break;
+//         case EXPR_INTEGER_LITERAL:
+//             LOG(INFO) << "expr_codegen::EXPR_INTEGER_LITERAL";
+//             e->reg = scratch_alloc();
+//             AsmLog() << indent(depth) << "mov " << scratch_name(e->reg) << ", " << e->literal_value;
+//             break;
 
-        case EXPR_ADD:
-            LOG(INFO) << "expr_codegen::EXPR_ADD";
-            expr_codegen(depth, e->left);
-            expr_codegen(depth, e->right);
-            AsmLog() << indent(depth) << "add " << scratch_name(e->right->reg) << ", " << scratch_name(e->left->reg);
-            e->reg = e->right->reg;
-            scratch_free(e->left->reg);
-            break;
+//         case EXPR_ADD:
+//             LOG(INFO) << "expr_codegen::EXPR_ADD";
+//             expr_codegen(depth, e->left);
+//             expr_codegen(depth, e->right);
+//             AsmLog() << indent(depth) << "add " << scratch_name(e->right->reg) << ", " << scratch_name(e->left->reg);
+//             e->reg = e->right->reg;
+//             scratch_free(e->left->reg);
+//             break;
 
-        case EXPR_SUBTRACT:
-            LOG(INFO) << "expr_codegen::EXPR_SUBTRACT";
-            expr_codegen(depth, e->left);
-            expr_codegen(depth, e->right);
-            AsmLog() << indent(depth) << "sub " << scratch_name(e->right->reg) << ", " << scratch_name(e->left->reg);
-            e->reg = e->right->reg;
-            scratch_free(e->left->reg);
-            break;
+//         case EXPR_SUBTRACT:
+//             LOG(INFO) << "expr_codegen::EXPR_SUBTRACT";
+//             expr_codegen(depth, e->left);
+//             expr_codegen(depth, e->right);
+//             AsmLog() << indent(depth) << "sub " << scratch_name(e->right->reg) << ", " << scratch_name(e->left->reg);
+//             e->reg = e->right->reg;
+//             scratch_free(e->left->reg);
+//             break;
 
-        case EXPR_MULTIPLY:
-            LOG(INFO) << "expr_codegen::EXPR_MULTIPLY";
-            expr_codegen(depth, e->left);
-            expr_codegen(depth, e->right);
-            AsmLog() << indent(depth) << "imul " << scratch_name(e->right->reg) << ", " << scratch_name(e->left->reg);
-            e->reg = e->right->reg;
-            scratch_free(e->left->reg);
-            break;
+//         case EXPR_MULTIPLY:
+//             LOG(INFO) << "expr_codegen::EXPR_MULTIPLY";
+//             expr_codegen(depth, e->left);
+//             expr_codegen(depth, e->right);
+//             AsmLog() << indent(depth) << "imul " << scratch_name(e->right->reg) << ", " << scratch_name(e->left->reg);
+//             e->reg = e->right->reg;
+//             scratch_free(e->left->reg);
+//             break;
 
-        case EXPR_DIVIDE:
-            LOG(INFO) << "expr_codegen::EXPR_DIVIDE";
-            expr_codegen(depth, e->left);
-            expr_codegen(depth, e->right);
-            AsmLog() << indent(depth) << "mov rax, " << scratch_name(e->left->reg);
-            AsmLog() << indent(depth) << "cqo";
-            AsmLog() << indent(depth) << "idiv " << scratch_name(e->right->reg);
-            AsmLog() << indent(depth) << "mov " << scratch_name(e->left->reg) << ", rax";
-            e->reg = e->left->reg;
-            scratch_free(e->right->reg);
-            break;
+//         case EXPR_DIVIDE:
+//             LOG(INFO) << "expr_codegen::EXPR_DIVIDE";
+//             expr_codegen(depth, e->left);
+//             expr_codegen(depth, e->right);
+//             AsmLog() << indent(depth) << "mov rax, " << scratch_name(e->left->reg);
+//             AsmLog() << indent(depth) << "cqo";
+//             AsmLog() << indent(depth) << "idiv " << scratch_name(e->right->reg);
+//             AsmLog() << indent(depth) << "mov " << scratch_name(e->left->reg) << ", rax";
+//             e->reg = e->left->reg;
+//             scratch_free(e->right->reg);
+//             break;
 
-        case EXPR_BOOL_LITERAL:
-            LOG(INFO) << "expr_codegen::EXPR_BOOL_LITERAL";
-            e->reg = scratch_alloc();
-            AsmLog() << indent(depth) << "mov " << scratch_name(e->reg) << ", " << (e->boolean_literal ? 1 : 0);
-            break;
+//         case EXPR_BOOL_LITERAL:
+//             LOG(INFO) << "expr_codegen::EXPR_BOOL_LITERAL";
+//             e->reg = scratch_alloc();
+//             AsmLog() << indent(depth) << "mov " << scratch_name(e->reg) << ", " << (e->boolean_literal ? 1 : 0);
+//             break;
 
-        case EXPR_ASSIGN:
-            LOG(INFO) << "expr_codegen::EXPR_ASSIGN";
-            expr_codegen(depth, e->right);
-            AsmLog() << indent(depth) << "mov " << symbol_codegen(e->left->symbol) << ", " << scratch_name(e->right->reg);
-            e->reg = e->right->reg;
-            break;
+//         case EXPR_ASSIGN:
+//             LOG(INFO) << "expr_codegen::EXPR_ASSIGN";
+//             expr_codegen(depth, e->right);
+//             AsmLog() << indent(depth) << "mov " << symbol_codegen(e->left->symbol) << ", " << scratch_name(e->right->reg);
+//             e->reg = e->right->reg;
+//             break;
 
-        case EXPR_CALL:
-        {
-            LOG(INFO) << "expr_codegen::EXPR_CALL";
-            struct expr *arg = nullptr;
+//         case EXPR_CALL:
+//         {
+//             LOG(INFO) << "expr_codegen::EXPR_CALL";
+//             struct expr *arg = nullptr;
 
-            // Evaluate arguments in reverse order
-            std::vector<int> arg_regs;
-            if (e->right)
-            {
-                arg = e->right;
-            }
+//             // Evaluate arguments in reverse order
+//             std::vector<int> arg_regs;
+//             if (e->right)
+//             {
+//                 arg = e->right;
+//             }
 
-            while (arg)
-            {
-                LOG(INFO) << "Analyzing arguments...";
-                expr_codegen(depth + 1, arg);
-                arg_regs.push_back(arg->reg);
-                arg = arg->right;
-            }
+//             while (arg)
+//             {
+//                 LOG(INFO) << "Analyzing arguments...";
+//                 expr_codegen(depth + 1, arg);
+//                 arg_regs.push_back(arg->reg);
+//                 arg = arg->right;
+//             }
 
-            // Push arguments onto the stack in correct order
-            for (auto it = arg_regs.rbegin(); it != arg_regs.rend(); ++it)
-            {
-                AsmLog() << indent(depth) << "push " << scratch_name(*it);
-                scratch_free(*it);
-            }
+//             // Push arguments onto the stack in correct order
+//             for (auto it = arg_regs.rbegin(); it != arg_regs.rend(); ++it)
+//             {
+//                 AsmLog() << indent(depth) << "push " << scratch_name(*it);
+//                 scratch_free(*it);
+//             }
 
-            // Call the function
-            expr_codegen(depth + 1, e->left);
-            AsmLog() << indent(depth) << "call " << symbol_codegen(e->left->symbol);
+//             // Call the function
+//             expr_codegen(depth + 1, e->left);
+//             AsmLog() << indent(depth) << "call " << symbol_codegen(e->left->symbol);
 
-            // Adjust the stack pointer if there were arguments
-            if (!arg_regs.empty())
-            {
-                AsmLog() << indent(depth) << "add rsp, " << (arg_regs.size() * 8);
-            }
+//             // Adjust the stack pointer if there were arguments
+//             if (!arg_regs.empty())
+//             {
+//                 AsmLog() << indent(depth) << "add rsp, " << (arg_regs.size() * 8);
+//             }
 
-            // Allocate register for return value
-            e->reg = scratch_alloc();
-            AsmLog() << indent(depth) << "mov " << scratch_name(e->reg) << ", rax";
-        }
-        break;
+//             // Allocate register for return value
+//             e->reg = scratch_alloc();
+//             AsmLog() << indent(depth) << "mov " << scratch_name(e->reg) << ", rax";
+//         }
+//         break;
 
-        default:
-            LOG(ERROR) << indent(depth) << "expr_codegen:: Unsupported expression kind: " << expr_to_string(e->kind);
-            exit(EXIT_FAILURE);
-            break;
-    }
-}
+//         default:
+//             LOG(ERROR) << indent(depth) << "expr_codegen:: Unsupported expression kind: " << expr_to_string(e->kind);
+//             exit(EXIT_FAILURE);
+//             break;
+//     }
+// }
