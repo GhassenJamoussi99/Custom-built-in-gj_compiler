@@ -12,7 +12,7 @@
 #include "log.h"
 #include "asm_log.h"
 
-void decl_typecheck(struct decl *d) {
+void decl_typecheck(Decl *d) {
     LOG(INFO) << "decl::decl_typecheck";
 
     if (!d) return;
@@ -20,15 +20,15 @@ void decl_typecheck(struct decl *d) {
     if (d->value) {
         struct type *t;
         t = expr_typecheck(d->value);
-        if (!type_equals(t, d->symbol->type)) {
+        if (!type_equals(t, d->decl_symbol->type)) {
             std::cerr << "Type error: Declaration type does not match the type of the assigned value. Declaration type: " 
-                      << type_to_string(d->symbol->type->kind) << ", Assigned value type: " << type_to_string(t->kind) << std::endl;
+                      << type_to_string(d->decl_symbol->type->kind) << ", Assigned value type: " << type_to_string(t->kind) << std::endl;
         }
         type_delete(t);
     }
 
     if (d->code) {
-        param_list_typecheck(d->type->params);
+        param_list_typecheck(d->decl_type->params);
         stmt_typecheck(d->code);
     }
 

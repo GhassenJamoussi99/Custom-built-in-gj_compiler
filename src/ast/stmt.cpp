@@ -9,7 +9,7 @@
 #include "scratch.h"
 
 
-struct stmt * stmt_create( stmt_t kind, struct decl *decl, struct expr *init_expr, struct expr *expr,
+struct stmt * stmt_create( stmt_t kind, Decl *decl, struct expr *init_expr, struct expr *expr,
                            struct expr *next_expr,struct stmt *body, struct stmt *else_body, struct stmt *next) {
     stmt *s = new stmt;
 
@@ -73,7 +73,7 @@ void stmt_resolve(struct stmt *s) {
     switch (s->kind) {
         case STMT_DECL:
             LOG(INFO) << "stmt_resolve::Resolving declaration statement";
-            decl_resolve(s->decl);
+            if (s->decl) s->decl->resolve();
             break;
 
         case STMT_EXPR:

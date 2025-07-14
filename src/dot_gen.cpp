@@ -165,38 +165,41 @@ void print_type_dot(struct type* t) {
 }
 
 
-void print_decl_list_dot(struct decl* decl_list) {
 
-    struct decl* current = decl_list;
+void print_decl_list_dot(Decl* decl_list) {
+    Decl* current = decl_list;
+
     while (current) {
         std::string node_label = generate_node_label("DECL", node_counter++);
-        DotLog() << node_label << " [label=\"{DECL_" << current->name << " | { <type> type | <value> value | <code> code | <next> next }}\"];\n";
+        DotLog() << node_label << " [label=\"{DECL_" << current->name 
+                 << " | { <type> type | <value> value | <code> code | <next> next }}\"];\n";
 
-        if (current->type) {
+        if (current->decl_type) {
             std::string type_label = generate_node_label("TYPE", node_counter);
-            
-            DotLog() << type_label << " [label=\"{" << type_to_string(current->type->kind) << \
-                                      "| { <subtype> subtype | <params> params}}\"];\n";
-            
-            if (current->type->subtype) {
+            DotLog() << type_label << " [label=\"{" << type_to_string(current->decl_type->kind)
+                     << "| { <subtype> subtype | <params> params}}\"];\n";
+
+            if (current->decl_type->subtype) {
                 std::string subtype_label = generate_node_label("SUBTYPE", node_counter);
-                print_type_dot(current->type->subtype);
+                print_type_dot(current->decl_type->subtype);
                 DotLog() << type_label << ":subtype -> " << subtype_label << ";\n";
             }
 
-            if (current->type->params) {
+            if (current->decl_type->params) {
                 std::string params_label = generate_node_label("PARAM", node_counter);
-                print_param_list_dot(current->type->params);
+                print_param_list_dot(current->decl_type->params);
                 DotLog() << type_label << ":params -> " << params_label << ";\n";
             }
 
             DotLog() << node_label << ":type -> " << type_label << ";\n";
         }
+
         if (current->value) {
             std::string value_label = generate_node_label("EXPR", node_counter);
             print_expr_dot(current->value);
             DotLog() << node_label << ":value -> " << value_label << ";\n";
         }
+
         if (current->code) {
             std::string code_label = generate_node_label("STMT", node_counter);
             print_stmt_dot(current->code);
@@ -210,5 +213,4 @@ void print_decl_list_dot(struct decl* decl_list) {
 
         current = current->next;
     }
-
 }

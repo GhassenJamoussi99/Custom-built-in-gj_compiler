@@ -1,3 +1,7 @@
+%code requires {
+    class Decl;
+}
+
 /* C PREAMBLE CODE */
 %{
 #include <stdio.h>
@@ -47,7 +51,7 @@ struct expr *parser_result;
 
 %union {
     struct expr *expr_ptr;
-    struct decl *decl;
+    Decl *decl;
     struct stmt *stmt;
     struct type *type;
     struct param_list *param;
@@ -74,8 +78,8 @@ struct expr *parser_result;
 %%
 /* grammar rules */
 program : decl_list                                                 {
-                                                                      decl_resolve($1); 
-                                                                      decl_typecheck($1);
+                                                                      $1->resolve();
+                                                                      $1->typecheck();
 
                                                                       //Before folding
                                                                       DOT_LOGCFG.initiate();
@@ -108,13 +112,14 @@ decl_list
     ;
 
 decl
-    : TOKEN_ID TOKEN_DPOINTS type TOKEN_SEMI                                                                    { $$ = decl_create(std::string($1), $3, nullptr, nullptr, nullptr); }
-    | TOKEN_ID TOKEN_DPOINTS type TOKEN_ASSIGN expr TOKEN_SEMI                                                  { $$ = decl_create(std::string($1), $3, $5, nullptr, nullptr); }
-    | TOKEN_ID TOKEN_DPOINTS TOKEN_FUNCTION type TOKEN_LPAREN param_list TOKEN_RPAREN TOKEN_ASSIGN stmt_block   { $$ = decl_create(std::string($1), 
-                                                                                                                    type_create(TYPE_FUNCTION, $4, $6),
-                                                                                                                    nullptr, 
-                                                                                                                    $9, 
-                                                                                                                    nullptr); }
+    : TOKEN_ID TOKEN_DPOINTS type TOKEN_SEMI { $$ = new Decl(std::string($1), $3, nullptr, nullptr, nullptr); }
+    | TOKEN_ID TOKEN_DPOINTS type TOKEN_ASSIGN expr TOKEN_SEMI { $$ = new Decl(std::string($1), $3, $5, nullptr, nullptr); }
+    | TOKEN_ID TOKEN_DPOINTS TOKEN_FUNCTION type TOKEN_LPAREN param_list TOKEN_RPAREN TOKEN_ASSIGN stmt_block { 
+                    $$ = new Decl(std::string($1),
+                      type_create(TYPE_FUNCTION, $4, $6),
+                      nullptr,
+                      $9,
+                      nullptr);}
     ;
         
 type

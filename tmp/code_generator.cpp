@@ -23,7 +23,7 @@ std::string create_label() {
     return "L" + std::to_string(label_count++);
 }
 
-void decl_codegen(struct decl *d) {
+void decl_codegen(Decl *d) {
     int depth = 1;
 
     if (!d) return;

@@ -199,22 +199,16 @@ void constant_fold_stmt(struct stmt *statement)
 }
 
 
-void constant_fold_decls(struct decl *decl_list)
-{
-    for (struct decl *d = decl_list; d != nullptr; d = d->next)
-    {
-        if (d->code)
-        {
+void constant_fold_decls(Decl* decl_list) {
+    for (Decl* d = decl_list; d != nullptr; d = d->next) {
+        if (d->code) {
             LOG(DEBUG) << "Folding declaration statements for: " << d->name;
             constant_fold_stmt(d->code);
         }
-        if (d->value)
-        {
+        if (d->value) {
             LOG(DEBUG) << "Folding declaration expressions: " << d->name;
             constant_fold_expr(d->value);
-        }
-        else
-        {
+        } else {
             LOG(DEBUG) << "Declaration " << d->name << " has a null expression.";
         }
     }

@@ -5,7 +5,7 @@
 
 void constant_fold_expr(struct expr *ast);
 void constant_fold_stmt(struct stmt *statement);
-void constant_fold_decls(struct decl *decl_list);
+void constant_fold_decls(Decl *decl_list);
 
 /*
   TODO ADD EXPR_CALLS, FOR LOOP, WHILE

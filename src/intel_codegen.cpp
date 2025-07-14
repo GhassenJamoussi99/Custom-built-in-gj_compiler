@@ -26,115 +26,82 @@ std::string create_label()
     return "L" + std::to_string(label_count++);
 }
 
-void decl_codegen(struct decl *d)
-{
+void decl_codegen(Decl* d) {
     int depth = 1;
 
-    // end of decl list
-    if (!d)
-        return;
+    if (!d) return;
 
-    // Handle the declaration of the variable
-    if (d->symbol->kind == SYMBOL_GLOBAL)
-    {
-        if (d->value)
-        {
-
-            dataSection << d->name << ":" << std::endl;
-            switch (d->value->kind)
-            {
-            case EXPR_INTEGER_LITERAL:
-                dataSection << "\t.quad " << d->value->literal_value << std::endl;
-                break;
-            case EXPR_STRING_LITERAL:
-            {
-                dataSection << "\t.string " << d->value->string_literal  << std::endl;
-
-                break;
-            }
-            case EXPR_BOOL_LITERAL:
-                dataSection << "\t.quad " << (d->value->boolean_literal ? 1 : 0) << std::endl;
-                break;
-            // TODO for others
-            default:
-                std::cerr << "Unsupported initializer for global variable: " << d->name << std::endl;
-                exit(1);
-                break;
+    if (d->decl_symbol->kind == SYMBOL_GLOBAL) {
+        if (d->value) {
+            dataSection << d->name << ":\n";
+            switch (d->value->kind) {
+                case EXPR_INTEGER_LITERAL:
+                    dataSection << "\t.quad " << d->value->literal_value << "\n";
+                    break;
+                case EXPR_STRING_LITERAL:
+                    dataSection << "\t.string " << d->value->string_literal << "\n";
+                    break;
+                case EXPR_BOOL_LITERAL:
+                    dataSection << "\t.quad " << (d->value->boolean_literal ? 1 : 0) << "\n";
+                    break;
+                default:
+                    std::cerr << "Unsupported initializer for global variable: " << d->name << "\n";
+                    exit(1);
             }
         }
     }
 
-    // If there is an initializer, generate code for it (local variables only)
-    if (d->value && (d->symbol->kind == SYMBOL_LOCAL || d->symbol->kind == SYMBOL_PARAM))
-    {
+    if (d->value && (d->decl_symbol->kind == SYMBOL_LOCAL || d->decl_symbol->kind == SYMBOL_PARAM)) {
         AsmLog() << indent(depth + 1) << "# Allocate space for local variable " << d->name;
-        switch(d->type->kind)
-        {                
-            case TYPE_STRING:
-            {
+        switch (d->decl_type->kind) {
+            case TYPE_STRING: {
                 int reg = scratch_alloc();
                 std::string str_label = create_label();
+                std::string init_value = d->value ? d->value->string_literal : "";
+
                 dataSection << str_label << ":\n";
-
-                std::string init_value = "";
-                if (d->value) {
-                    init_value = d->value->string_literal;
-                }
-
                 dataSection << "\t.string " << init_value << "\n";
+
                 AsmLog() << indent(depth + 1) << "lea " << scratch_name(reg) << ", " << str_label;
-                AsmLog() << indent(depth + 1) << "mov " << symbol_codegen(d->symbol) << ", " << scratch_name(reg) << "\n";
-            }
+                AsmLog() << indent(depth + 1) << "mov " << symbol_codegen(d->decl_symbol) << ", " << scratch_name(reg) << "\n";
                 break;
+            }
+
             case TYPE_BOOLEAN:
             case TYPE_CHARACTER:
-            case TYPE_INTEGER: 
-            {
+            case TYPE_INTEGER: {
                 expr_codegen(depth + 1, d->value);
-                AsmLog() << indent(depth + 1) << "mov " << symbol_codegen(d->symbol) << ", " << scratch_name(d->value->reg) << "\n";
+                AsmLog() << indent(depth + 1) << "mov " << symbol_codegen(d->decl_symbol) << ", " << scratch_name(d->value->reg) << "\n";
                 scratch_free(d->value->reg);
-            }
                 break;
+            }
+
             default:
-                LOG(WARN) << "No type specfiied";
-         }
+                LOG(WARN) << "No type specified";
+        }
     }
 
-    // If there is a code block associated with this declaration (e.g., a function definition), generate code for it
-    if (d->code)
-    {
+    if (d->code) {
         AsmLog() << "\n.globl " << d->name;
         AsmLog() << d->name << ":";
         AsmLog() << indent(depth + 1) << "push rbp";
         AsmLog() << indent(depth + 1) << "mov rbp, rsp";
 
         int local_variable_count = d->local_var_count;
-        int local_variable_size = 8; // Assuming 8 bytes for each local variable
-        
-        // Calculate the total stack space needed
-        if (local_variable_count <= 1){
+        int local_variable_size = 8;
+
+        if (local_variable_count <= 1) {
             AsmLog() << indent(depth + 1) << "sub rsp, 16";
-        } else if (local_variable_count > 1) {
+        } else {
             AsmLog() << indent(depth + 1) << "sub rsp, " << local_variable_size * local_variable_count;
         }
-
-        // if (d->value && (d->symbol->kind == SYMBOL_GLOBAL))
-        // {
-        //     AsmLog() << indent(depth + 1) << "# Allocate space for global variable " << d->name;
-        //     if (d->type->kind ==  TYPE_STRING)
-        //     {
-        //         int reg = scratch_alloc();
-        //         AsmLog() << indent(depth + 1) << "lea " << scratch_name(reg) << ", " << d->name;
-        //         AsmLog() << indent(depth + 1) << "mov " << symbol_codegen(d->symbol) << ", " << scratch_name(reg) << "\n";
-        //     }
-        // }
 
         stmt_codegen(depth + 1, d->code);
         AsmLog() << indent(depth + 1) << "leave";
         AsmLog() << indent(depth + 1) << "ret";
     }
 
-    // Recursively handle the next declaration in the list
+    // Recurse to next
     decl_codegen(d->next);
 }
 

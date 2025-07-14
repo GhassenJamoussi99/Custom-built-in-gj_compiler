@@ -1,24 +1,32 @@
 #ifndef DECL_H
 #define DECL_H
 
-#include <stdio.h>
-
+#include <string>
 #include "type.h"
 #include "stmt.h"
 #include "expr.h"
+#include "symbol.h"
 
-struct decl {
-	std::string name;
-	struct type *type;
-	struct expr *value;
-	struct stmt *code;
-	struct symbol *symbol;
-	struct decl *next;
-	int local_var_count;
+// Forward declarations
+struct stmt;
+struct expr;
+struct type;
+struct symbol;
+
+class Decl {
+public:
+    std::string name;
+    type* decl_type;
+    expr* value;
+    stmt* code;
+    symbol* decl_symbol;
+    Decl* next;
+    int local_var_count;
+
+    Decl(const std::string& name, type* type, expr* value, stmt* code, Decl* next);
+
+    void resolve();
+    void typecheck(); // If needed, implement later
 };
-
-struct decl * decl_create( std::string name, struct type *type, struct expr *value, struct stmt *code, struct decl *next );
-void decl_resolve( struct decl *d );
-void decl_typecheck( struct decl *d );
 
 #endif

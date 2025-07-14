@@ -14,62 +14,36 @@
 
 extern int scope_stack_local_var_counts[STACK_MAX];
 
-struct decl *decl_create(std::string name, struct type *type, struct expr *value, struct stmt *code, struct decl *next)
-{
-    decl *d = new decl;
+Decl::Decl(const std::string& name, type* type, expr* value, stmt* code, Decl* next)
+    : name(name), decl_type(type), value(value), code(code), decl_symbol(nullptr), next(next), local_var_count(0)
+{}
 
-    if (!d)
-    {
-        std::cerr << "DECL Error: Out of memory" << std::endl;
-        std::exit(1);
-    }
-
-    d->name = name;
-    d->type = type;
-    d->value = value;
-    d->code = code;
-    d->next = next;
-    d->local_var_count = 0;
-
-    return d;
-}
-
-// Helper function to print indentation
-void print_indent(int indent)
-{
-    for (int i = 0; i < indent; ++i)
-    {
-        std::cout << " ";
-    }
-}
-
-void decl_resolve(struct decl *d) {
-    if (!d) return;
-
-    LOG(INFO) << "Resolving declaration: " << d->name;
-
-    symbol_t kind = scope_level() > 1 ? SYMBOL_LOCAL : SYMBOL_GLOBAL;
-    d->symbol = symbol_create(kind, d->type, d->name);
-    expr_resolve(d->value);
-    scope_bind(d->name, d->symbol);
-
-    if (d->code) {
-        scope_enter();
-        struct param_list *params = d->type->params;
-        while (params) {
-            LOG(INFO) << "Resolving parameter: " << params->name;
-            struct symbol *param_symbol = symbol_create(SYMBOL_PARAM, params->type, params->name);
-            scope_bind(params->name, param_symbol);
-            params = params->next;
+void Decl::resolve() {
+    Decl* d = this;
+    while (d) {
+        LOG(INFO) << "Resolving declaration: " << d->name;
+        symbol_t kind = scope_level() > 1 ? SYMBOL_LOCAL : SYMBOL_GLOBAL;
+        d->decl_symbol = symbol_create(kind, d->decl_type, d->name);
+        expr_resolve(d->value);
+        scope_bind(d->name, d->decl_symbol);
+        if (d->code) {
+            scope_enter();
+            param_list* params = d->decl_type->params;
+            while (params) {
+                LOG(INFO) << "Resolving parameter: " << params->name;
+                symbol* param_symbol = symbol_create(SYMBOL_PARAM, params->type, params->name);
+                scope_bind(params->name, param_symbol);
+                params = params->next;
+            }
+            stmt_resolve(d->code);
+            d->local_var_count = scope_stack_local_var_counts[scope_level()];
+            LOG(INFO) << "Number of local variables " << d->local_var_count;
+            scope_exit();
         }
-        stmt_resolve(d->code);
-        d->local_var_count = scope_stack_local_var_counts[scope_level()];
-
-        LOG(INFO) << "Number of local variables " << d->local_var_count;
-
-        scope_exit();
+        d = d->next;
     }
-
-    decl_resolve(d->next);
 }
 
+void Decl::typecheck() {
+    //TODO
+}

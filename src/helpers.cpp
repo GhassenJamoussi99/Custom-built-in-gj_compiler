@@ -156,9 +156,9 @@ void print_stmt(struct stmt *s, int depth)
     }
 }
 
-void print_decl_list(struct decl *decl_list)
+void print_decl_list(Decl *decl_list)
 {
-    for (struct decl *d = decl_list; d != nullptr; d = d->next)
+    for (Decl *d = decl_list; d != nullptr; d = d->next)
     {
         std::cout << "Declaration: " << d->name << std::endl;
         if (d->code)
