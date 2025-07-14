@@ -2,17 +2,19 @@
 #define PARAM_LIST_H
 
 #include "type.h"
+#include "symbol.h"
 
 #include <string>
 #include <iostream>
 
 struct expr;
+class Symbol;
 
 struct param_list
 {
 	std::string name;
     struct type *type;
-    struct symbol *symbol;
+    Symbol *symbol;
     struct param_list *next;
 };
 

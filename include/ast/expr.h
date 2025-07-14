@@ -1,7 +1,7 @@
 #ifndef EXPR_H
 #define EXPR_H
 
-// #include "symbol.h"
+#include "symbol.h"
 #include <string>
 
 typedef enum
@@ -32,7 +32,7 @@ struct expr
 	expr_t kind;
 	struct expr *left;
 	struct expr *right;
-    struct symbol *symbol;
+    Symbol *symbol;
 	struct type *type;
 
 	/* used by various leaf exprs */

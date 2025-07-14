@@ -11,7 +11,7 @@
 class Stmt;
 struct expr;
 struct type;
-struct symbol;
+class Symbol;
 
 class Decl {
 public:
@@ -19,7 +19,7 @@ public:
     type* decl_type;
     expr* value;
     Stmt* code;
-    symbol* decl_symbol;
+    Symbol* decl_symbol;
     Decl* next;
     int local_var_count;
 

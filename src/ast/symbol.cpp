@@ -5,20 +5,13 @@
 #include "symbol.h"
 #include "scope.h"
 
-struct symbol *symbol_create(symbol_t kind, struct type *type, std::string name) {
-
-    std::string kind_str = symbol_to_string(kind);
+Symbol::Symbol(symbol_t kind, struct type *type, std::string name) 
+    : kind(kind), type(type), name(name), which(0), param_count(0) {
+    std::string kind_str = Symbol::to_string(kind);
     LOG(INFO) << "Creating symbol: " << name << " of kind: " << kind_str;
-    symbol *sym = new symbol;
-    sym->kind = kind;
-    sym->type = type;
-    sym->name = name;
-    sym->which = 0;
-    sym->param_count = 0;
-    return sym;
 }
 
-std::string symbol_to_string(symbol_t symbol) {
+std::string Symbol::to_string(symbol_t symbol) {
     switch (symbol) {
         case SYMBOL_LOCAL:
             return "SYMBOL_LOCAL";
@@ -29,4 +22,13 @@ std::string symbol_to_string(symbol_t symbol) {
         default:
             return "UNKNOWN_SYMBOL";
     }
+}
+
+// Legacy function for backward compatibility
+Symbol* symbol_create(symbol_t kind, struct type *type, std::string name) {
+    return new Symbol(kind, type, name);
+}
+
+std::string symbol_to_string(symbol_t symbol) {
+    return Symbol::to_string(symbol);
 }

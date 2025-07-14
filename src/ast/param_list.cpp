@@ -38,7 +38,7 @@ void param_list_resolve(struct param_list *p) {
         LOG(INFO) << "Resolving parameter: " << p->name;
 
         symbol_t kind = SYMBOL_PARAM;
-        p->symbol = symbol_create(kind, p->type, p->name);
+        p->symbol = new Symbol(kind, p->type, p->name);
         scope_bind(p->name, p->symbol);
 
         p = p->next;

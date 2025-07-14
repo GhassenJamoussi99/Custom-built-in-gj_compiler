@@ -5,7 +5,7 @@
 #include "scope.h"
 #include "log.h"
 
-std::vector<std::unordered_map<std::string, symbol*>> scope_stack;
+std::vector<std::unordered_map<std::string, Symbol*>> scope_stack;
 int scope_stack_local_var_counts[STACK_MAX];
 int scope_stack_parameter_counts[STACK_MAX];
 
@@ -14,7 +14,7 @@ int param_offset = 16; // Start at 16(%rbp) since 0(%rbp) is return address and 
 
 void scope_enter() {
     LOG(INFO) << "Entering new scope.";
-    scope_stack.push_back(std::unordered_map<std::string, symbol*>());
+    scope_stack.push_back(std::unordered_map<std::string, Symbol*>());
 }
 
 void scope_exit() {
@@ -31,7 +31,7 @@ int scope_level() {
     return scope_stack.size();
 }
 
-void scope_bind(std::string name, struct symbol *sym) {
+void scope_bind(std::string name, Symbol *sym) {
     if (scope_stack.empty()) {
         LOG(ERROR) << "Error: No scope to bind symbol to.";
         exit(EXIT_FAILURE);
@@ -53,7 +53,7 @@ void scope_bind(std::string name, struct symbol *sym) {
     scope_stack.back()[name] = sym;
 }
 
-struct symbol *scope_lookup(std::string name) {
+Symbol *scope_lookup(std::string name) {
     for (auto it = scope_stack.rbegin(); it != scope_stack.rend(); ++it) {
         auto found = it->find(name);
         if (found != it->end()) {

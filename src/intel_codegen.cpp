@@ -105,7 +105,7 @@ void decl_codegen(Decl* d) {
     decl_codegen(d->next);
 }
 
-std::string symbol_codegen(struct symbol *sym)
+std::string symbol_codegen(Symbol *sym)
 {
     std::ostringstream oss;
     switch (sym->kind)
