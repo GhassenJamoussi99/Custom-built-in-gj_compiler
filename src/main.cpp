@@ -6,7 +6,7 @@
 #include "asm_log.h"
 #include "dot_log.h"
 
-#include "InputReader.h"
+#include "input_reader.h"
 
 using namespace std;
 
