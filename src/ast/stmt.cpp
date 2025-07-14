@@ -8,173 +8,91 @@
 #include "asm_log.h"
 #include "scratch.h"
 
+Stmt::Stmt(stmt_t kind, Decl *decl, expr *init_expr, expr *expr_value, expr *next_expr, Stmt *body, Stmt *else_body, Stmt *next)
+	: kind(kind), decl(decl), init_expr(init_expr), expr_value(expr_value), next_expr(next_expr), body(body), else_body(else_body), next(next) {}
 
-struct stmt * stmt_create( stmt_t kind, Decl *decl, struct expr *init_expr, struct expr *expr,
-                           struct expr *next_expr,struct stmt *body, struct stmt *else_body, struct stmt *next) {
-    stmt *s = new stmt;
-
-    if (!s) {
-        std::cerr << "STMT Error: Out of memory" << std::endl;
-        std::exit(1);
-    }
-
-    s->kind = kind;
-    s->decl = decl;
-    s->init_expr = init_expr;
-    s->expr = expr;
-    s->next_expr = next_expr;
-    s->body = body;
-    s->else_body = else_body;
-    s->next = next;
-
-    return s;
+Stmt* Stmt::create_if_else(expr *expr_value, Stmt *body, Stmt *else_body) {
+	return new Stmt(STMT_IF_ELSE, nullptr, nullptr, expr_value, nullptr, body, else_body, nullptr);
 }
 
-stmt *stmt_create_if_else(expr *expr, stmt *body, stmt *else_body)
-{
-    stmt *s = new stmt;
-
-    if (!s) {
-        std::cerr << "STMT Error: Out of memory" << std::endl;
-        std::exit(1);
-    }
-
-    s->kind = STMT_IF_ELSE;
-    s->decl = nullptr;
-    s->init_expr = nullptr;
-    s->expr = expr;
-    s->next_expr = nullptr;
-    s->body = body;
-    s->else_body = else_body;
-    s->next = nullptr;
-
-    return s;
+Stmt* Stmt::list_append(Stmt *list, Stmt *stmt) {
+	if (!list) return stmt;
+	Stmt *current = list;
+	while (current->next) current = current->next;
+	current->next = stmt;
+	return list;
 }
 
-// Function to append a statement to the statement list
-struct stmt *stmt_list_append(struct stmt *list, struct stmt *stmt) {
-    if (!list) {
-        return stmt;
-    }
-
-    struct stmt *current = list;
-    while (current->next) {
-        current = current->next;
-    }
-    current->next = stmt;
-    return list;
+void Stmt::resolve() {
+	LOG(INFO) << "stmt_resolve::";
+	switch (kind) {
+		case STMT_DECL:
+			LOG(INFO) << "stmt_resolve::Resolving declaration statement";
+			if (decl) decl->resolve();
+			break;
+		case STMT_EXPR:
+			LOG(INFO) << "stmt_resolve::Resolving expression statement";
+			expr_resolve(expr_value);
+			break;
+		case STMT_IF_ELSE:
+			LOG(INFO) << "stmt_resolve::Resolving if-else statement";
+			expr_resolve(expr_value);
+			if (body) body->resolve();
+			if (else_body) else_body->resolve();
+			break;
+		case STMT_FOR:
+			LOG(INFO) << "stmt_resolve::Resolving for loop statement";
+			if (init_expr) expr_resolve(init_expr);
+			if (expr_value) expr_resolve(expr_value);
+			if (next_expr) expr_resolve(next_expr);
+			if (body) body->resolve();
+			break;
+		case STMT_PRINT:
+			LOG(INFO) << "stmt_resolve::Resolving print statement";
+			expr_resolve(expr_value);
+			break;
+		case STMT_WHILE:
+			LOG(INFO) << "stmt_resolve::Resolving while loop statement";
+			expr_resolve(expr_value);
+			if (body) body->resolve();
+			break;
+		case STMT_RETURN:
+			LOG(INFO) << "stmt_resolve::Resolving return statement";
+			expr_resolve(expr_value);
+			break;
+		case STMT_BLOCK:
+			LOG(INFO) << "stmt_resolve::Resolving block statement";
+			if (body) body->resolve();
+			break;
+		case STMT_FUNCTION:
+			LOG(INFO) << "stmt_resolve::Resolving function statement";
+			if (body) body->resolve();
+			break;
+		default:
+			LOG(ERROR) << "stmt_resolve::Unknown statement type encountered." << Stmt::to_string(kind);
+			exit(EXIT_FAILURE);
+			break;
+	}
+	if (next) next->resolve();
 }
 
-void stmt_resolve(struct stmt *s) {
-    if (!s) return;
-
-    LOG(INFO) << "stmt_resolve::";
-
-    switch (s->kind) {
-        case STMT_DECL:
-            LOG(INFO) << "stmt_resolve::Resolving declaration statement";
-            if (s->decl) s->decl->resolve();
-            break;
-
-        case STMT_EXPR:
-            LOG(INFO) << "stmt_resolve::Resolving expression statement";
-            expr_resolve(s->expr);
-            break;
-
-        case STMT_IF_ELSE:
-            LOG(INFO) << "stmt_resolve::Resolving if-else statement";
-            expr_resolve(s->expr);
-            stmt_resolve(s->body);
-            stmt_resolve(s->else_body);
-            break;
-
-        case STMT_FOR:
-            LOG(INFO) << "stmt_resolve::Resolving for loop statement";
-            if (s->init_expr) {
-                LOG(DEBUG) << "stmt_resolve::Resolving init expression of for loop";
-                expr_resolve(s->init_expr);
-            } else {
-                LOG(DEBUG) << "stmt_resolve::Init expression of for loop is null";
-            }
-            if (s->expr) {
-                LOG(DEBUG) << "stmt_resolve::Resolving condition expression of for loop";
-                expr_resolve(s->expr);
-            } else {
-                LOG(DEBUG) << "stmt_resolve::Condition expression of for loop is null";
-            }
-            if (s->next_expr) {
-                LOG(DEBUG) << "stmt_resolve::Resolving next expression of for loop";
-                expr_resolve(s->next_expr);
-            } else {
-                LOG(DEBUG) << "stmt_resolve::Next expression of for loop is null";
-            }
-            if (s->body) {
-                LOG(DEBUG) << "stmt_resolve::Resolving body of for loop";
-                stmt_resolve(s->body);
-            } else {
-                LOG(DEBUG) << "stmt_resolve::Body of for loop is null";
-            }
-            break;
-
-        case STMT_PRINT:
-            LOG(INFO) << "stmt_resolve::Resolving print statement";
-            expr_resolve(s->expr);
-            break;
-
-        case STMT_WHILE:
-            LOG(INFO) << "stmt_resolve::Resolving while loop statement";
-            expr_resolve(s->expr);
-            stmt_resolve(s->body);
-            break;
-
-        case STMT_RETURN:
-            LOG(INFO) << "stmt_resolve::Resolving return statement";
-            expr_resolve(s->expr);
-            break;
-
-        case STMT_BLOCK:
-            LOG(INFO) << "stmt_resolve::Resolving block statement";
-            stmt_resolve(s->body);
-            break;
-
-        case STMT_FUNCTION:
-            LOG(INFO) << "stmt_resolve::Resolving function statement";
-            stmt_resolve(s->body);
-            break;
-
-        default:
-            LOG(ERROR) << "stmt_resolve::Unknown statement type encountered." << stmt_to_string(s->kind);
-            exit(EXIT_FAILURE);
-            break;
-    }
-
-    if (s->next) {
-        LOG(INFO) << "stmt_resolve::Resolving next statement in the list";
-        stmt_resolve(s->next);
-    }
+std::string Stmt::to_string(stmt_t kind) {
+	switch (kind) {
+		case STMT_DECL: return "STMT_DECL";
+		case STMT_EXPR: return "STMT_EXPR";
+		case STMT_IF_ELSE: return "STMT_IF_ELSE";
+		case STMT_FOR: return "STMT_FOR";
+		case STMT_PRINT: return "STMT_PRINT";
+		case STMT_WHILE: return "STMT_WHILE";
+		case STMT_FUNCTION: return "STMT_FUNCTION";
+		case STMT_RETURN: return "STMT_RETURN";
+		case STMT_BLOCK: return "STMT_BLOCK";
+		default: return "UNKNOWN_STATEMENT_KIND";
+	}
 }
 
-std::string stmt_to_string(stmt_t kind) {
-    switch (kind) {
-        case STMT_DECL:
-            return "STMT_DECL";
-        case STMT_EXPR:
-            return "STMT_EXPR";
-        case STMT_IF_ELSE:
-            return "STMT_IF_ELSE";
-        case STMT_FOR:
-            return "STMT_FOR";
-        case STMT_PRINT:
-            return "STMT_PRINT";
-        case STMT_WHILE:
-            return "STMT_WHILE";
-        case STMT_FUNCTION:
-            return "STMT_FUNCTION";
-        case STMT_RETURN:
-            return "STMT_RETURN";
-        case STMT_BLOCK:
-            return "STMT_BLOCK";
-        default:
-            return "UNKNOWN_STATEMENT_KIND";
-    }
+void Stmt::typecheck() {
+//TODO
 }
+
+// TODO: Implement Stmt::typecheck as a member function, moving logic from stmt_typecheck

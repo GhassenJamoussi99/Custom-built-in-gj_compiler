@@ -1,5 +1,6 @@
 %code requires {
     class Decl;
+    class Stmt;
 }
 
 /* C PREAMBLE CODE */
@@ -29,7 +30,6 @@ extern char *yytext;
 std::map<std::string, struct expr *> symbolTable; // Use std::string for symbol table keys
 std::stringstream dataSection; // To collect .data section entries
 
-
 int yyerror(const char *s) {
     extern char *yytext;
     extern int yylineno;
@@ -52,7 +52,7 @@ struct expr *parser_result;
 %union {
     struct expr *expr_ptr;
     Decl *decl;
-    struct stmt *stmt;
+    Stmt *stmt;
     struct type *type;
     struct param_list *param;
     char* expr_id;
@@ -140,18 +140,18 @@ param_decl
     ;
 
 stmt 
-    : TOKEN_IF TOKEN_LPAREN expr TOKEN_RPAREN normal_stmt %prec "then"           { $$ = stmt_create_if_else($3, $5, nullptr);   LOG(DEBUG) << "stmt_create_if_else:: IF_STMT";}
-    | TOKEN_IF TOKEN_LPAREN expr TOKEN_RPAREN normal_stmt TOKEN_ELSE normal_stmt { $$ = stmt_create_if_else($3, $5, $7);        LOG(DEBUG) << "stmt_create_if_else::IF_ELSE_STMT";}
+    : TOKEN_IF TOKEN_LPAREN expr TOKEN_RPAREN normal_stmt %prec "then"           { $$ = Stmt::create_if_else($3, $5, nullptr);   LOG(DEBUG) << "stmt_create_if_else:: IF_STMT";}
+    | TOKEN_IF TOKEN_LPAREN expr TOKEN_RPAREN normal_stmt TOKEN_ELSE normal_stmt { $$ = Stmt::create_if_else($3, $5, $7);        LOG(DEBUG) << "stmt_create_if_else::IF_ELSE_STMT";}
     | normal_stmt
     ;
 
 normal_stmt
-    : TOKEN_WHILE TOKEN_LPAREN expr TOKEN_RPAREN stmt                                           { $$ = stmt_create(STMT_WHILE, nullptr, nullptr, $3, nullptr, $5, nullptr, nullptr); }
-    | TOKEN_FOR TOKEN_LPAREN for_assignment TOKEN_SEMI expr TOKEN_SEMI assignment TOKEN_RPAREN stmt { $$ = stmt_create(STMT_FOR, nullptr, $3, $5, $7, $9, nullptr, nullptr); }
-    | TOKEN_PRINT call_args TOKEN_SEMI                                                          { $$ = stmt_create(STMT_PRINT, nullptr, nullptr, $2, nullptr, nullptr, nullptr, nullptr); }
-    | TOKEN_RETURN expr TOKEN_SEMI                                                              { $$ = stmt_create(STMT_RETURN, nullptr, nullptr, $2, nullptr, nullptr, nullptr, nullptr); }
-    | assignment TOKEN_SEMI                                                                     { $$ = stmt_create(STMT_EXPR, nullptr, nullptr, $1, nullptr, nullptr, nullptr, nullptr); }
-    | stmt_block                                                                                { $$ = stmt_create(STMT_BLOCK, nullptr, nullptr, nullptr, nullptr, $1, nullptr, nullptr); }
+    : TOKEN_WHILE TOKEN_LPAREN expr TOKEN_RPAREN stmt                                           { $$ = new Stmt(STMT_WHILE, nullptr, nullptr, $3, nullptr, $5, nullptr, nullptr); }
+    | TOKEN_FOR TOKEN_LPAREN for_assignment TOKEN_SEMI expr TOKEN_SEMI assignment TOKEN_RPAREN stmt { $$ = new Stmt(STMT_FOR, nullptr, $3, $5, $7, $9, nullptr, nullptr); }
+    | TOKEN_PRINT call_args TOKEN_SEMI                                                          { $$ = new Stmt(STMT_PRINT, nullptr, nullptr, $2, nullptr, nullptr, nullptr, nullptr); }
+    | TOKEN_RETURN expr TOKEN_SEMI                                                              { $$ = new Stmt(STMT_RETURN, nullptr, nullptr, $2, nullptr, nullptr, nullptr, nullptr); }
+    | assignment TOKEN_SEMI                                                                     { $$ = new Stmt(STMT_EXPR, nullptr, nullptr, $1, nullptr, nullptr, nullptr, nullptr); }
+    | stmt_block                                                                                { $$ = new Stmt(STMT_BLOCK, nullptr, nullptr, nullptr, nullptr, $1, nullptr, nullptr); }
     ;
 
 stmt_block
@@ -163,9 +163,9 @@ stmt_list
     : /* empty */    
         { $$ = nullptr; }
     | stmt_list stmt 
-        { $$ = stmt_list_append($1, $2); }
+        { $$ = Stmt::list_append($1, $2); }
     | stmt_list decl 
-        { $$ = stmt_list_append($1, stmt_create(STMT_DECL, $2, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr)); }
+        { $$ = Stmt::list_append($1, new Stmt(STMT_DECL, $2, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr)); }
     ;
 
 for_assignment : assignment
@@ -200,6 +200,7 @@ cond
     | expr TOKEN_GT term { $$ = expr_create(EXPR_GT, $1, $3); }
     | expr TOKEN_LEQ term { $$ = expr_create(EXPR_LEQ, $1, $3); }
     | expr TOKEN_GEQ term { $$ = expr_create(EXPR_GEQ, $1, $3); }
+    ;
 
 term
     : term TOKEN_MUL factor          { $$ = expr_create(EXPR_MULTIPLY,$1,$3); }

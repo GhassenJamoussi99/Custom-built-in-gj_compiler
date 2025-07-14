@@ -3,7 +3,9 @@
 #define STMT_H
 
 #include "decl.h"
+
 class Decl;
+struct expr;
 
 typedef enum {
 	STMT_DECL,
@@ -17,26 +19,23 @@ typedef enum {
 	STMT_BLOCK
 } stmt_t;
 
-struct stmt {
+class Stmt {
+public:
 	stmt_t kind;
 	Decl *decl;
-	struct expr *init_expr;
-	struct expr *expr;
-	struct expr *next_expr;
-	struct stmt *body;
-	struct stmt *else_body;
-	struct stmt *next;
+	expr *init_expr;
+	expr *expr_value;
+	expr *next_expr;
+	Stmt *body;
+	Stmt *else_body;
+	Stmt *next;
+
+	Stmt(stmt_t kind, Decl *decl, expr *init_expr, expr *expr_value, expr *next_expr, Stmt *body, Stmt *else_body, Stmt *next);
+	static Stmt* create_if_else(expr *expr_value, Stmt *body, Stmt *else_body);
+	static Stmt* list_append(Stmt *list, Stmt *stmt);
+	void resolve();
+	void typecheck();
+	static std::string to_string(stmt_t kind);
 };
-
-struct stmt * stmt_create( stmt_t kind, Decl *decl, struct expr *init_expr, 
-							struct expr *expr, struct expr *next_expr, struct stmt *body,
-							struct stmt *else_body, struct stmt *next );
-
-struct stmt* stmt_create_if_else(struct expr *expr, struct stmt *body, struct stmt *else_body);
-
-struct stmt *stmt_list_append(struct stmt *list, struct stmt *stmt);
-void stmt_resolve( struct stmt *s);
-void stmt_typecheck(struct stmt *s);
-std::string stmt_to_string(stmt_t kind);
 
 #endif

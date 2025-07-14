@@ -92,7 +92,7 @@ void constant_fold_expr(struct expr *ast)
 }
 
 
-void constant_fold_stmt(struct stmt *statement)
+void constant_fold_stmt(Stmt *statement)
 {
     if (!statement)
     {
@@ -100,7 +100,7 @@ void constant_fold_stmt(struct stmt *statement)
         return;
     }
 
-    LOG(DEBUG) << "Folding statement of kind: " << stmt_to_string(statement->kind);
+    LOG(DEBUG) << "Folding statement of kind: " << Stmt::to_string(statement->kind);
 
     switch (statement->kind)
     {
@@ -113,10 +113,10 @@ void constant_fold_stmt(struct stmt *statement)
             break;
         case STMT_EXPR:
         case STMT_IF_ELSE:
-            if (statement->expr)
+            if (statement->expr_value)
             {
                 LOG(DEBUG) << "Folding if/if-else condition.";
-                constant_fold_expr(statement->expr);
+                constant_fold_expr(statement->expr_value);
             }
             if (statement->body)
             {
@@ -135,10 +135,10 @@ void constant_fold_stmt(struct stmt *statement)
                 LOG(DEBUG) << "Folding for-loop init expression.";
                 constant_fold_expr(statement->init_expr);
             }
-            if (statement->expr)
+            if (statement->expr_value)
             {
                 LOG(DEBUG) << "Folding for-loop condition.";
-                constant_fold_expr(statement->expr);
+                constant_fold_expr(statement->expr_value);
             }
             if (statement->next_expr)
             {
@@ -152,10 +152,10 @@ void constant_fold_stmt(struct stmt *statement)
             }
             break;
         case STMT_WHILE:
-            if (statement->expr)
+            if (statement->expr_value)
             {
                 LOG(DEBUG) << "Folding while-loop condition.";
-                constant_fold_expr(statement->expr);
+                constant_fold_expr(statement->expr_value);
             }
             if (statement->body)
             {
@@ -165,10 +165,10 @@ void constant_fold_stmt(struct stmt *statement)
             break;
         case STMT_PRINT:
         case STMT_RETURN:
-            if (statement->expr)
+            if (statement->expr_value)
             {
                 LOG(DEBUG) << "Folding print/return statement.";
-                constant_fold_expr(statement->expr);
+                constant_fold_expr(statement->expr_value);
             }
             break;
         case STMT_FUNCTION:

@@ -82,11 +82,11 @@ void print_expr_dot(struct expr* e) {
 }
 
 
-void print_stmt_dot(struct stmt* s) {
+void print_stmt_dot(Stmt* s) {
     if (!s) return;
 
     std::string node_label = generate_node_label("STMT", node_counter++);
-    std::string stmt_label = stmt_to_string(s->kind);  // Modify as needed to distinguish statement types
+    std::string stmt_label = Stmt::to_string(s->kind);  // Modify as needed to distinguish statement types
     DotLog() << node_label << " [label=\"{" << stmt_label << " | { <decl> decl | <init_expr> init_expr | <expr> expr | <next_expr> next_expr | <body> body | <else_body> else_body | <next> next }}\"];\n";
 
     if (s->decl) {
@@ -99,9 +99,9 @@ void print_stmt_dot(struct stmt* s) {
         print_expr_dot(s->init_expr);
         DotLog() << node_label << ":init_expr -> " << init_expr_label << ";\n";
     }
-    if (s->expr) {
+    if (s->expr_value) {
         std::string expr_label = generate_node_label("EXPR", node_counter);
-        print_expr_dot(s->expr);
+        print_expr_dot(s->expr_value);
         DotLog() << node_label << ":expr -> " << expr_label << ";\n";
     }
     if (s->next_expr) {

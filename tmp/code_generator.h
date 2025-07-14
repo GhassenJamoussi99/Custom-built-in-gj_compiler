@@ -2,5 +2,5 @@
 
 void decl_codegen(Decl *d);
 std::string symbol_codegen(struct symbol *sym);
-void stmt_codegen(int depth, struct stmt *s);
+void stmt_codegen(int depth, Stmt *s);
 //void expr_codegen(int depth, struct expr *e);

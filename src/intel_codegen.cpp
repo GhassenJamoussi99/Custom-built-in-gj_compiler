@@ -128,7 +128,7 @@ std::string symbol_codegen(struct symbol *sym)
     return oss.str();
 }
 
-void stmt_codegen(int depth, struct stmt *s)
+void stmt_codegen(int depth, Stmt *s)
 {
     if (!s)
         return;
@@ -137,8 +137,8 @@ void stmt_codegen(int depth, struct stmt *s)
     {
     case STMT_EXPR:
         LOG(DEBUG) << "stmt_codegen::Generating code for STMT_EXPR";
-        expr_codegen(depth, s->expr);
-        scratch_free(s->expr->reg);
+        expr_codegen(depth, s->expr_value);
+        scratch_free(s->expr_value->reg);
         break;
 
     case STMT_DECL:
@@ -148,9 +148,9 @@ void stmt_codegen(int depth, struct stmt *s)
 
     case STMT_RETURN:
         LOG(DEBUG) << "stmt_codegen::Generating code for STMT_RETURN";
-        expr_codegen(depth, s->expr);
-        AsmLog() << indent(depth) << "mov rax, " << scratch_name(s->expr->reg);
-        scratch_free(s->expr->reg);
+        expr_codegen(depth, s->expr_value);
+        AsmLog() << indent(depth) << "mov rax, " << scratch_name(s->expr_value->reg);
+        scratch_free(s->expr_value->reg);
         break;
 
     case STMT_FOR:
@@ -166,10 +166,10 @@ void stmt_codegen(int depth, struct stmt *s)
 
         AsmLog() << indent(depth - 1) << start_label << ":";
         
-        if (s->expr) {
-            expr_codegen(depth, s->expr);
-            AsmLog() << indent(depth) << "cmp " << scratch_name(s->expr->reg) << ", 0";
-            scratch_free(s->expr->reg);
+        if (s->expr_value) {
+            expr_codegen(depth, s->expr_value);
+            AsmLog() << indent(depth) << "cmp " << scratch_name(s->expr_value->reg) << ", 0";
+            scratch_free(s->expr_value->reg);
             AsmLog() << indent(depth) << "je " << loop_end_label;
         }
 
@@ -189,9 +189,9 @@ void stmt_codegen(int depth, struct stmt *s)
         LOG(DEBUG) << "stmt_codegen::Generating code for STMT_IF_ELSE";
         std::string else_label = create_label();
         std::string end_label = create_label();
-        expr_codegen(depth, s->expr);
-        AsmLog() << indent(depth) << "cmp " << scratch_name(s->expr->reg) << ", 0";
-        scratch_free(s->expr->reg);
+        expr_codegen(depth, s->expr_value);
+        AsmLog() << indent(depth) << "cmp " << scratch_name(s->expr_value->reg) << ", 0";
+        scratch_free(s->expr_value->reg);
         AsmLog() << indent(depth) << "je " << else_label;
         stmt_codegen(depth, s->body);
         AsmLog() << indent(depth) << "jmp " << end_label;
@@ -207,9 +207,9 @@ void stmt_codegen(int depth, struct stmt *s)
         std::string start_label = create_label();
         std::string loop_end_label = create_label();
         AsmLog() << start_label << ":";
-        expr_codegen(depth, s->expr);
-        AsmLog() << indent(depth) << "cmp " << scratch_name(s->expr->reg) << ", 0";
-        scratch_free(s->expr->reg);
+        expr_codegen(depth, s->expr_value);
+        AsmLog() << indent(depth) << "cmp " << scratch_name(s->expr_value->reg) << ", 0";
+        scratch_free(s->expr_value->reg);
         AsmLog() << indent(depth) << "je " << loop_end_label;
         stmt_codegen(depth, s->body);
         AsmLog() << indent(depth) << "jmp " << start_label;
@@ -232,7 +232,7 @@ void stmt_codegen(int depth, struct stmt *s)
         LOG(DEBUG) << "stmt_codegen::Generating code for STMT_PRINT";
 
         // Initialize variables
-        expr *curr_arg = s->expr;
+        expr *curr_arg = s->expr_value;
         int arg_count = 0;
         std::string print_format = "";
         bool lit_vals = false;
@@ -330,7 +330,7 @@ void stmt_codegen(int depth, struct stmt *s)
         
 
         // Generate code for each argument
-        curr_arg = s->expr; // Reset to the beginning of arguments
+        curr_arg = s->expr_value; // Reset to the beginning of arguments
         arg_index = 1;      // Reset argument index for code generation
         expr_codegen(depth, curr_arg->left); // Generate code for the argument expression
 
@@ -362,10 +362,10 @@ void stmt_codegen(int depth, struct stmt *s)
         LOG(DEBUG) << "stmt_codegen::Emitted call to printf.";
 
         // Free any resources (registers) used for the expressions
-        if (s->expr->reg)
+        if (s->expr_value->reg)
         {
             LOG(DEBUG) << "stmt_codegen::Freed resources for the expression.";
-            scratch_free(s->expr->reg);
+            scratch_free(s->expr_value->reg);
         }
         break;
     }

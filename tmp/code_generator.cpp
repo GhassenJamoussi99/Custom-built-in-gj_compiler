@@ -108,8 +108,8 @@ void stmt_codegen(int depth, struct stmt *s) {
     switch (s->kind) {
         case STMT_EXPR:
             LOG(DEBUG) << "stmt_codegen::Generating code for STMT_EXPR";
-            expr_codegen(depth, s->expr);
-            scratch_free(s->expr->reg);
+            expr_codegen(depth, s->expr_value);
+            scratch_free(s->expr_value->reg);
             break;
 
         case STMT_DECL:
@@ -119,9 +119,9 @@ void stmt_codegen(int depth, struct stmt *s) {
 
         case STMT_RETURN:
             LOG(DEBUG) << "stmt_codegen::Generating code for STMT_RETURN";
-            expr_codegen(depth, s->expr);
-            AsmLog() << indent(depth) << "mov " << scratch_name(s->expr->reg) << ", rax";
-            scratch_free(s->expr->reg);
+            expr_codegen(depth, s->expr_value);
+            AsmLog() << indent(depth) << "mov " << scratch_name(s->expr_value->reg) << ", rax";
+            scratch_free(s->expr_value->reg);
             break;
 
         case STMT_IF_ELSE:
@@ -129,9 +129,9 @@ void stmt_codegen(int depth, struct stmt *s) {
                 LOG(DEBUG) << "stmt_codegen::Generating code for STMT_IF_ELSE";
                 std::string else_label = create_label();
                 std::string end_label = create_label();
-                expr_codegen(depth, s->expr);
-                AsmLog() << indent(depth) << "cmp " << scratch_name(s->expr->reg) << ", 0";
-                scratch_free(s->expr->reg);
+                expr_codegen(depth, s->expr_value);
+                AsmLog() << indent(depth) << "cmp " << scratch_name(s->expr_value->reg) << ", 0";
+                scratch_free(s->expr_value->reg);
                 AsmLog() << indent(depth) << "je " << else_label;
                 stmt_codegen(depth, s->body);
                 AsmLog() << indent(depth) << "jmp " << end_label;
@@ -147,9 +147,9 @@ void stmt_codegen(int depth, struct stmt *s) {
                 std::string start_label = create_label();
                 std::string loop_end_label = create_label();
                 AsmLog() << start_label << ":";
-                expr_codegen(depth, s->expr);
-                AsmLog() << "cmp " << scratch_name(s->expr->reg) << ", 0";
-                scratch_free(s->expr->reg);
+                expr_codegen(depth, s->expr_value);
+                AsmLog() << "cmp " << scratch_name(s->expr_value->reg) << ", 0";
+                scratch_free(s->expr_value->reg);
                 AsmLog() << "je " << loop_end_label;
                 stmt_codegen(depth, s->body);
                 AsmLog() << "jmp " << start_label;

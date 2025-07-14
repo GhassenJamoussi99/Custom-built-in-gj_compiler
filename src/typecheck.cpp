@@ -8,6 +8,7 @@
 #include "symbol.h"
 #include "scope.h"
 #include "scratch.h"
+#include "typecheck.h"
 
 #include "log.h"
 #include "asm_log.h"
@@ -29,7 +30,7 @@ void decl_typecheck(Decl *d) {
 
     if (d->code) {
         param_list_typecheck(d->decl_type->params);
-        stmt_typecheck(d->code);
+        d->code->typecheck();
     }
 
     if (d->next) {
@@ -37,7 +38,7 @@ void decl_typecheck(Decl *d) {
     }
 }
 
-void stmt_typecheck(struct stmt *s) {
+void stmt_typecheck(Stmt *s) {
     struct type *t = nullptr;
 
     if (!s) return;
@@ -45,14 +46,14 @@ void stmt_typecheck(struct stmt *s) {
     switch (s->kind) {
         case STMT_EXPR:
             LOG(INFO) << "stmt_typecheck::STMT_EXPR";
-            t = expr_typecheck(s->expr);
+            t = expr_typecheck(s->expr_value);
             type_delete(t);
             break;
 
         case STMT_IF_ELSE:
             LOG(INFO) << "stmt_typecheck::STMT_IF_ELSE";
-            if (s->expr) {
-                t = expr_typecheck(s->expr);
+            if (s->expr_value) {
+                t = expr_typecheck(s->expr_value);
             }
 
             if (t->kind != TYPE_BOOLEAN) {
@@ -61,20 +62,20 @@ void stmt_typecheck(struct stmt *s) {
                 exit(EXIT_FAILURE);
             }
 
-            stmt_typecheck(s->body);
-            stmt_typecheck(s->else_body);
+            if (s->body) s->body->typecheck();
+            if (s->else_body) s->else_body->typecheck();
             break;
 
         case STMT_WHILE:
             LOG(INFO) << "stmt_typecheck::STMT_WHILE";
-            t = expr_typecheck(s->expr);
+            t = expr_typecheck(s->expr_value);
             if (t->kind != TYPE_BOOLEAN) {
                 std::cerr << "Type error: WHILE condition must be of boolean type. Condition type: " << t->kind << std::endl;
                 LOG(ERROR) << "stmt_typecheck::Type error: WHILE condition must be of boolean type. Condition type: " << t->kind;
                 exit(EXIT_FAILURE);
             }
             type_delete(t);
-            stmt_typecheck(s->body);
+            if (s->body) s->body->typecheck();
             break;
 
         case STMT_PRINT:
@@ -84,7 +85,7 @@ void stmt_typecheck(struct stmt *s) {
 
         case STMT_RETURN:
             LOG(INFO) << "stmt_typecheck::STMT_RETURN";
-            t = expr_typecheck(s->expr);
+            t = expr_typecheck(s->expr_value);
             //TODO later
             type_delete(t);
             break;
@@ -96,8 +97,8 @@ void stmt_typecheck(struct stmt *s) {
 
         case STMT_BLOCK:
             LOG(INFO) << "stmt_typecheck::STMT_BLOCK";
-            for (struct stmt *curr = s->body; curr != nullptr; curr = curr->next) {
-                stmt_typecheck(curr);
+            for (Stmt *curr = s->body; curr != nullptr; curr = curr->next) {
+                curr->typecheck();
             }
             break;
 
@@ -107,8 +108,8 @@ void stmt_typecheck(struct stmt *s) {
                 t = expr_typecheck(s->init_expr);
                 type_delete(t);
             }
-            if (s->expr) {
-                t = expr_typecheck(s->expr);
+            if (s->expr_value) {
+                t = expr_typecheck(s->expr_value);
                 if (t->kind != TYPE_BOOLEAN) {
                     std::cerr << "Type error: FOR loop condition must be of boolean type. Condition type: " << t->kind << std::endl;
                     LOG(ERROR) << "stmt_typecheck::Type error: FOR loop condition must be of boolean type. Condition type: " << t->kind;
@@ -120,13 +121,13 @@ void stmt_typecheck(struct stmt *s) {
                 t = expr_typecheck(s->next_expr);
                 type_delete(t);
             }
-            stmt_typecheck(s->body);
+            if (s->body) s->body->typecheck();
             break;
 
        case STMT_FUNCTION:
             LOG(INFO) << "stmt_typecheck::STMT_FUNCTION";
             if (s->body) {
-                stmt_typecheck(s->body);
+                s->body->typecheck();
             } else {
                 std::cerr << "Type error: Function declaration or type is null." << std::endl;
                 LOG(ERROR) << "stmt_typecheck::Type error: Function declaration or type is null.";
@@ -135,8 +136,8 @@ void stmt_typecheck(struct stmt *s) {
             break;
 
         default:
-            std::cerr << "stmt_typecheck::Unknown statement type encountered: " << stmt_to_string(s->kind) << std::endl;
-            LOG(ERROR) << "stmt_typecheck::Unknown statement type encountered: " << stmt_to_string(s->kind);
+            std::cerr << "stmt_typecheck::Unknown statement type encountered: " << Stmt::to_string(s->kind) << std::endl;
+            LOG(ERROR) << "stmt_typecheck::Unknown statement type encountered: " << Stmt::to_string(s->kind);
             exit(EXIT_FAILURE);
             break;
     }

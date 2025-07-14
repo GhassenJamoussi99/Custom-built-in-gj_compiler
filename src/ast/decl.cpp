@@ -14,7 +14,7 @@
 
 extern int scope_stack_local_var_counts[STACK_MAX];
 
-Decl::Decl(const std::string& name, type* type, expr* value, stmt* code, Decl* next)
+Decl::Decl(const std::string& name, type* type, expr* value, Stmt* code, Decl* next)
     : name(name), decl_type(type), value(value), code(code), decl_symbol(nullptr), next(next), local_var_count(0)
 {}
 
@@ -35,7 +35,7 @@ void Decl::resolve() {
                 scope_bind(params->name, param_symbol);
                 params = params->next;
             }
-            stmt_resolve(d->code);
+            d->code->resolve();
             d->local_var_count = scope_stack_local_var_counts[scope_level()];
             LOG(INFO) << "Number of local variables " << d->local_var_count;
             scope_exit();

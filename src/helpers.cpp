@@ -67,7 +67,7 @@ void print_ast(struct expr *ast, int depth)
 }
 
 // Recursive function to print the AST for statements
-void print_stmt(struct stmt *s, int depth)
+void print_stmt(Stmt *s, int depth)
 {
     if (!s)
     {
@@ -76,7 +76,7 @@ void print_stmt(struct stmt *s, int depth)
         return;
     }
 
-    LOG(DEBUG) << "print_stmt: Statement kind: " << stmt_to_string(s->kind);
+    LOG(DEBUG) << "print_stmt: Statement kind: " << Stmt::to_string(s->kind);
     switch (s->kind)
     {
     case STMT_DECL:
@@ -93,17 +93,17 @@ void print_stmt(struct stmt *s, int depth)
         break;
     case STMT_EXPR:
         LOG(DEBUG) << "print_stmt: STMT_EXPR";
-        print_ast(s->expr, depth + 1);
+        print_ast(s->expr_value, depth + 1);
         break;
     case STMT_RETURN:
         LOG(DEBUG) << "print_stmt: STMT_RETURN";
         std::cout << indent(depth) << "Return statement" << std::endl;
-        print_ast(s->expr, depth + 1);
+        print_ast(s->expr_value, depth + 1);
         break;
     case STMT_IF_ELSE:
         LOG(DEBUG) << "print_stmt: STMT_IF_ELSE";
         std::cout << indent(depth) << "If statement" << std::endl;
-        print_ast(s->expr, depth + 1);
+        print_ast(s->expr_value, depth + 1);
         print_stmt(s->body, depth + 1);
         if (s->else_body)
         {
@@ -114,13 +114,13 @@ void print_stmt(struct stmt *s, int depth)
     case STMT_WHILE:
         LOG(DEBUG) << "print_stmt: STMT_WHILE";
         std::cout << indent(depth) << "While statement" << std::endl;
-        print_ast(s->expr, depth + 1);
+        print_ast(s->expr_value, depth + 1);
         print_stmt(s->body, depth + 1);
         break;
     case STMT_BLOCK:
         LOG(DEBUG) << "print_stmt: STMT_BLOCK";
         std::cout << indent(depth) << "Block statement" << std::endl;
-        for (struct stmt *stmt = s->body; stmt != nullptr; stmt = stmt->next)
+        for (Stmt *stmt = s->body; stmt != nullptr; stmt = stmt->next)
         {
             print_stmt(stmt, depth + 1);
         }
@@ -135,12 +135,11 @@ void print_stmt(struct stmt *s, int depth)
         {
             LOG(ERROR) << "print_stmt: STMT_FUNCTION has null decl or decl->name";
             exit(EXIT_FAILURE);
-
         }
         print_stmt(s->body, depth + 1);
         break;
     default:
-        LOG(ERROR) << "print_stmt: Unknown statement kind: " << stmt_to_string(s->kind);
+        LOG(ERROR) << "print_stmt: Unknown statement kind: " << Stmt::to_string(s->kind);
         exit(EXIT_FAILURE);
         break;
     }

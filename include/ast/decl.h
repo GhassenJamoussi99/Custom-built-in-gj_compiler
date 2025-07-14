@@ -8,7 +8,7 @@
 #include "symbol.h"
 
 // Forward declarations
-struct stmt;
+class Stmt;
 struct expr;
 struct type;
 struct symbol;
@@ -18,12 +18,12 @@ public:
     std::string name;
     type* decl_type;
     expr* value;
-    stmt* code;
+    Stmt* code;
     symbol* decl_symbol;
     Decl* next;
     int local_var_count;
 
-    Decl(const std::string& name, type* type, expr* value, stmt* code, Decl* next);
+    Decl(const std::string& name, type* type, expr* value, Stmt* code, Decl* next);
 
     void resolve();
     void typecheck(); // If needed, implement later
