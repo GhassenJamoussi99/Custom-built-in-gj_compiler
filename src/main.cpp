@@ -6,8 +6,7 @@
 #include "asm_log.h"
 #include "dot_log.h"
 
-extern FILE *yyin;
-extern int yyparse();
+#include "InputReader.h"
 
 using namespace std;
 
@@ -31,19 +30,17 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    yyin = fopen(argv[1], "r");
-    if (!yyin)
+    const std::string filename = argv[1];
+    InputReader inputReader(filename);
+    if (!inputReader.openFile())
     {
-        std::cerr << "Could not open file: " << argv[1] << std::endl;
+        std::cerr << "Error: Could not open file " << filename << std::endl;
         return 1;
-    }
+    }   
 
     compiler gj_compiler;
     gj_compiler.compile();
-
-    fclose(yyin);
 }
-
 
 /** 
  * DONE:
@@ -67,7 +64,6 @@ int main(int argc, char *argv[])
  * TEST other standard tests.
  * To improve typechecks
  * --------------------------------------------------------------
- * 
  * TODOS:
  * 
    

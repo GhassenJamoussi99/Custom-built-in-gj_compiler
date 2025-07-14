@@ -5,6 +5,7 @@
 #include "scope.h"
 #include "asm_log.h"
 
+extern int yyparse();
 extern char *yytext;
 extern struct expr *parser_result;
 
@@ -14,8 +15,7 @@ void compiler::compile() {
 
     // Initialize the global scope
     scope_enter();
-
-
+    
     // Check whether the given program is standard compliant
     if (yyparse() == 0)
     {
