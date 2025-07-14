@@ -5,3 +5,4 @@ build/*
 *.s
 *.pdf
 *.log
+gj_compiler
