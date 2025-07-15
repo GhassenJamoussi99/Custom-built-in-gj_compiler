@@ -43,32 +43,7 @@ int main(int argc, char *argv[])
 }
 
 /** 
- * DONE:
- * parse functions successfully : done
- * add if else in the parser
- * change bminor code to comply to b-minor of github standards
- * handle simple print
- * for loop
- * consider comments 
- * Implement typechecks
- * Implement resolve 
- * Test with the data from the book
- * Implement semantic routines
- * handle complex print
- * Improve typechecks for expr
- * Implement IR
- * Implmenet codegen
- * good1-8.bminor
- * Consider print in codegen
- * Fix good9.bminor fix if else statements.
- * TEST other standard tests.
- * To improve typechecks
- * --------------------------------------------------------------
  * TODOS:
- * 
-   
-
- *  
  * INCREMENT/DECREMENT NOT WORKING CORRECTLY - TO FIX
  * Improve stmt typechecks
  * Improve expr typchecks - EXPR_CALL
@@ -79,8 +54,6 @@ int main(int argc, char *argv[])
  * "if" statement for stmt 
  * implement while eval, for eval and functions eval
  * organize folder structures
- * Add modern C++ methods
- * Switch to full use of classes at the end after following the book
  * When a var is not init it is for some reason considered as \ 
  * An integer, this neeeds to be checked. 
  * Fix seg fault of typecheking example: 
