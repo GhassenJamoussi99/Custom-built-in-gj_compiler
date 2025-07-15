@@ -40,7 +40,7 @@ void param_list_resolve(struct param_list *p) {
 
         symbol_t kind = SYMBOL_PARAM;
         p->symbol = new Symbol(kind, p->type, p->name);
-        scope_bind(p->name, p->symbol);
+        Scope::bind(p->name, p->symbol);
 
         p = p->next;
     }

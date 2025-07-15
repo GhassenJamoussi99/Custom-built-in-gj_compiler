@@ -27,7 +27,7 @@ std::string create_label()
     return "L" + std::to_string(label_count++);
 }
 
-void decl_codegen(Decl* d) {
+void IntelCodegen::decl_codegen(Decl* d) {
     int depth = 1;
 
     if (!d) return;
@@ -53,27 +53,27 @@ void decl_codegen(Decl* d) {
     }
 
     if (d->value && (d->decl_symbol->kind == SYMBOL_LOCAL || d->decl_symbol->kind == SYMBOL_PARAM)) {
-        AsmLog() << indent(depth + 1) << "# Allocate space for local variable " << d->name;
+        AsmLog() << Helpers::indent(depth + 1) << "# Allocate space for local variable " << d->name;
         switch (d->decl_type->kind) {
             case TYPE_STRING: {
-                int reg = scratch_alloc();
+                int reg = Scratch::alloc();
                 std::string str_label = create_label();
                 std::string init_value = d->value ? d->value->string_literal : "";
 
                 dataSection << str_label << ":\n";
                 dataSection << "\t.string " << init_value << "\n";
 
-                AsmLog() << indent(depth + 1) << "lea " << scratch_name(reg) << ", " << str_label;
-                AsmLog() << indent(depth + 1) << "mov " << symbol_codegen(d->decl_symbol) << ", " << scratch_name(reg) << "\n";
+                AsmLog() << Helpers::indent(depth + 1) << "lea " << Scratch::name(reg) << ", " << str_label;
+                AsmLog() << Helpers::indent(depth + 1) << "mov " << IntelCodegen::symbol_codegen(d->decl_symbol) << ", " << Scratch::name(reg) << "\n";
                 break;
             }
 
             case TYPE_BOOLEAN:
             case TYPE_CHARACTER:
             case TYPE_INTEGER: {
-                expr_codegen(depth + 1, d->value);
-                AsmLog() << indent(depth + 1) << "mov " << symbol_codegen(d->decl_symbol) << ", " << scratch_name(d->value->reg) << "\n";
-                scratch_free(d->value->reg);
+                IntelCodegen::expr_codegen(depth + 1, d->value);
+                AsmLog() << Helpers::indent(depth + 1) << "mov " << IntelCodegen::symbol_codegen(d->decl_symbol) << ", " << Scratch::name(d->value->reg) << "\n";
+                Scratch::free(d->value->reg);
                 break;
             }
 
@@ -85,28 +85,28 @@ void decl_codegen(Decl* d) {
     if (d->code) {
         AsmLog() << "\n.globl " << d->name;
         AsmLog() << d->name << ":";
-        AsmLog() << indent(depth + 1) << "push rbp";
-        AsmLog() << indent(depth + 1) << "mov rbp, rsp";
+        AsmLog() << Helpers::indent(depth + 1) << "push rbp";
+        AsmLog() << Helpers::indent(depth + 1) << "mov rbp, rsp";
 
         int local_variable_count = d->local_var_count;
         int local_variable_size = 8;
 
         if (local_variable_count <= 1) {
-            AsmLog() << indent(depth + 1) << "sub rsp, 16";
+            AsmLog() << Helpers::indent(depth + 1) << "sub rsp, 16";
         } else {
-            AsmLog() << indent(depth + 1) << "sub rsp, " << local_variable_size * local_variable_count;
+            AsmLog() << Helpers::indent(depth + 1) << "sub rsp, " << local_variable_size * local_variable_count;
         }
 
-        stmt_codegen(depth + 1, d->code);
-        AsmLog() << indent(depth + 1) << "leave";
-        AsmLog() << indent(depth + 1) << "ret";
+        IntelCodegen::stmt_codegen(depth + 1, d->code);
+        AsmLog() << Helpers::indent(depth + 1) << "leave";
+        AsmLog() << Helpers::indent(depth + 1) << "ret";
     }
 
     // Recurse to next
-    decl_codegen(d->next);
+    IntelCodegen::decl_codegen(d->next);
 }
 
-std::string symbol_codegen(Symbol *sym)
+std::string IntelCodegen::symbol_codegen(Symbol *sym)
 {
     std::ostringstream oss;
     switch (sym->kind)
@@ -129,7 +129,7 @@ std::string symbol_codegen(Symbol *sym)
     return oss.str();
 }
 
-void stmt_codegen(int depth, Stmt *s)
+void IntelCodegen::stmt_codegen(int depth, Stmt *s)
 {
     if (!s)
         return;
@@ -138,20 +138,20 @@ void stmt_codegen(int depth, Stmt *s)
     {
     case STMT_EXPR:
         LOG(DEBUG) << "stmt_codegen::Generating code for STMT_EXPR";
-        expr_codegen(depth, s->expr_value);
-        scratch_free(s->expr_value->reg);
+        IntelCodegen::expr_codegen(depth, s->expr_value);
+        Scratch::free(s->expr_value->reg);
         break;
 
     case STMT_DECL:
         LOG(DEBUG) << "stmt_codegen::Generating code for STMT_DECL";
-        decl_codegen(s->decl);
+        IntelCodegen::decl_codegen(s->decl);
         break;
 
     case STMT_RETURN:
         LOG(DEBUG) << "stmt_codegen::Generating code for STMT_RETURN";
-        expr_codegen(depth, s->expr_value);
-        AsmLog() << indent(depth) << "mov rax, " << scratch_name(s->expr_value->reg);
-        scratch_free(s->expr_value->reg);
+        IntelCodegen::expr_codegen(depth, s->expr_value);
+        AsmLog() << Helpers::indent(depth) << "mov rax, " << Scratch::name(s->expr_value->reg);
+        Scratch::free(s->expr_value->reg);
         break;
 
     case STMT_FOR:
@@ -161,28 +161,28 @@ void stmt_codegen(int depth, Stmt *s)
         std::string loop_end_label = create_label();
         
         if (s->init_expr) {
-            expr_codegen(depth, s->init_expr);
-            scratch_free(s->init_expr->reg);
+            IntelCodegen::expr_codegen(depth, s->init_expr);
+            Scratch::free(s->init_expr->reg);
         }
 
-        AsmLog() << indent(depth - 1) << start_label << ":";
+        AsmLog() << Helpers::indent(depth - 1) << start_label << ":";
         
         if (s->expr_value) {
-            expr_codegen(depth, s->expr_value);
-            AsmLog() << indent(depth) << "cmp " << scratch_name(s->expr_value->reg) << ", 0";
-            scratch_free(s->expr_value->reg);
-            AsmLog() << indent(depth) << "je " << loop_end_label;
+            IntelCodegen::expr_codegen(depth, s->expr_value);
+            AsmLog() << Helpers::indent(depth) << "cmp " << Scratch::name(s->expr_value->reg) << ", 0";
+            Scratch::free(s->expr_value->reg);
+            AsmLog() << Helpers::indent(depth) << "je " << loop_end_label;
         }
 
-        stmt_codegen(depth, s->body);
+        IntelCodegen::stmt_codegen(depth, s->body);
 
         if (s->next_expr) {
-            expr_codegen(depth, s->next_expr);
-            scratch_free(s->next_expr->reg);
+            IntelCodegen::expr_codegen(depth, s->next_expr);
+            Scratch::free(s->next_expr->reg);
         }
 
-        AsmLog() << indent(depth) << "jmp " << start_label;
-        AsmLog() << indent(depth - 1) << loop_end_label << ":";
+        AsmLog() << Helpers::indent(depth) << "jmp " << start_label;
+        AsmLog() << Helpers::indent(depth - 1) << loop_end_label << ":";
     }
     break;
     case STMT_IF_ELSE:
@@ -190,15 +190,15 @@ void stmt_codegen(int depth, Stmt *s)
         LOG(DEBUG) << "stmt_codegen::Generating code for STMT_IF_ELSE";
         std::string else_label = create_label();
         std::string end_label = create_label();
-        expr_codegen(depth, s->expr_value);
-        AsmLog() << indent(depth) << "cmp " << scratch_name(s->expr_value->reg) << ", 0";
-        scratch_free(s->expr_value->reg);
-        AsmLog() << indent(depth) << "je " << else_label;
-        stmt_codegen(depth, s->body);
-        AsmLog() << indent(depth) << "jmp " << end_label;
-        AsmLog() << indent(depth - 1) << else_label << ":";
-        stmt_codegen(depth, s->else_body);
-        AsmLog() << indent(depth - 1) << end_label << ":";
+        IntelCodegen::expr_codegen(depth, s->expr_value);
+        AsmLog() << Helpers::indent(depth) << "cmp " << Scratch::name(s->expr_value->reg) << ", 0";
+        Scratch::free(s->expr_value->reg);
+        AsmLog() << Helpers::indent(depth) << "je " << else_label;
+        IntelCodegen::stmt_codegen(depth, s->body);
+        AsmLog() << Helpers::indent(depth) << "jmp " << end_label;
+        AsmLog() << Helpers::indent(depth - 1) << else_label << ":";
+        IntelCodegen::stmt_codegen(depth, s->else_body);
+        AsmLog() << Helpers::indent(depth - 1) << end_label << ":";
     }
     break;
 
@@ -208,24 +208,24 @@ void stmt_codegen(int depth, Stmt *s)
         std::string start_label = create_label();
         std::string loop_end_label = create_label();
         AsmLog() << start_label << ":";
-        expr_codegen(depth, s->expr_value);
-        AsmLog() << indent(depth) << "cmp " << scratch_name(s->expr_value->reg) << ", 0";
-        scratch_free(s->expr_value->reg);
-        AsmLog() << indent(depth) << "je " << loop_end_label;
-        stmt_codegen(depth, s->body);
-        AsmLog() << indent(depth) << "jmp " << start_label;
-        AsmLog() << indent(depth - 1) << loop_end_label << ":";
+        IntelCodegen::expr_codegen(depth, s->expr_value);
+        AsmLog() << Helpers::indent(depth) << "cmp " << Scratch::name(s->expr_value->reg) << ", 0";
+        Scratch::free(s->expr_value->reg);
+        AsmLog() << Helpers::indent(depth) << "je " << loop_end_label;
+        IntelCodegen::stmt_codegen(depth, s->body);
+        AsmLog() << Helpers::indent(depth) << "jmp " << start_label;
+        AsmLog() << Helpers::indent(depth - 1) << loop_end_label << ":";
     }
     break;
 
     case STMT_BLOCK:
         LOG(DEBUG) << "stmt_codegen::Generating code for STMT_BLOCK";
-        stmt_codegen(depth, s->body);
+        IntelCodegen::stmt_codegen(depth, s->body);
         break;
 
     case STMT_FUNCTION:
         LOG(DEBUG) << "stmt_codegen::Generating code for STMT_FUNCTION";
-        stmt_codegen(depth, s->body);
+        IntelCodegen::stmt_codegen(depth, s->body);
         break;
 
     case STMT_PRINT:
@@ -325,15 +325,15 @@ void stmt_codegen(int depth, Stmt *s)
             LOG(DEBUG) << "stmt_codegen::Format string emitted to data section: " << print_format;
 
             // Emit the assembly code to load the address of the format string into rdi
-            AsmLog() << indent(depth) << "lea " << argument_registers[0] << ", " << str_label << "";
-            LOG(DEBUG) << "stmt_codegen::Loaded format string address into " << argument_registers[0];
+            AsmLog() << Helpers::indent(depth) << "lea " << Scratch::argument_registers[0] << ", " << str_label << "";
+            LOG(DEBUG) << "stmt_codegen::Loaded format string address into " << Scratch::argument_registers[0];
         }
         
 
         // Generate code for each argument
         curr_arg = s->expr_value; // Reset to the beginning of arguments
         arg_index = 1;      // Reset argument index for code generation
-        expr_codegen(depth, curr_arg->left); // Generate code for the argument expression
+        IntelCodegen::expr_codegen(depth, curr_arg->left); // Generate code for the argument expression
 
         LOG(DEBUG) << "stmt_codegen::Starting code generation for arguments.";
 
@@ -342,10 +342,10 @@ void stmt_codegen(int depth, Stmt *s)
             LOG(DEBUG) << "stmt_codegen::Generated code for argument: " << curr_arg->left->name;
 
             // Move the argument into the appropriate register
-            if (arg_index < ARGS_MAX_COUNT)
+            if (arg_index < Scratch::ARGS_MAX_COUNT)
             {
-                AsmLog() << indent(depth) << "mov " << argument_registers[arg_index] << ", " << scratch_name(curr_arg->left->reg);
-                LOG(DEBUG) << "stmt_codegen::Moved argument to register: " << argument_registers[arg_index];
+                AsmLog() << Helpers::indent(depth) << "mov " << Scratch::argument_registers[arg_index] << ", " << Scratch::name(curr_arg->left->reg);
+                LOG(DEBUG) << "stmt_codegen::Moved argument to register: " << Scratch::argument_registers[arg_index];
                 arg_index++;
             }
             else
@@ -359,14 +359,14 @@ void stmt_codegen(int depth, Stmt *s)
         }
 
         // Emit the call to printf
-        AsmLog() << indent(depth) << "call printf";
+        AsmLog() << Helpers::indent(depth) << "call printf";
         LOG(DEBUG) << "stmt_codegen::Emitted call to printf.";
 
         // Free any resources (registers) used for the expressions
         if (s->expr_value->reg)
         {
             LOG(DEBUG) << "stmt_codegen::Freed resources for the expression.";
-            scratch_free(s->expr_value->reg);
+            Scratch::free(s->expr_value->reg);
         }
         break;
     }
@@ -376,10 +376,10 @@ void stmt_codegen(int depth, Stmt *s)
         break;
     }
 
-    stmt_codegen(depth, s->next);
+    IntelCodegen::stmt_codegen(depth, s->next);
 }
 
-void expr_codegen(int depth, Expr *e)
+void IntelCodegen::expr_codegen(int depth, Expr *e)
 {
     if (!e)
         return;
@@ -390,11 +390,11 @@ void expr_codegen(int depth, Expr *e)
         LOG(INFO) << "expr_codegen::EXPR_NAME";
         LOG(INFO) << "expr_codegen::e->symbol->kind = " << type_to_string(e->symbol->type->kind);
         if (e->symbol->type->kind != TYPE_FUNCTION) {   
-            e->reg = scratch_alloc();
+            e->reg = Scratch::alloc();
             if ( e->symbol->type->kind == TYPE_STRING && e->symbol->kind == SYMBOL_GLOBAL)
-                AsmLog() << indent(depth) << "lea " << scratch_name(e->reg) << ", " << symbol_codegen(e->symbol);
+                AsmLog() << Helpers::indent(depth) << "lea " << Scratch::name(e->reg) << ", " << IntelCodegen::symbol_codegen(e->symbol);
             else
-                AsmLog() << indent(depth) << "mov " << scratch_name(e->reg) << ", " << symbol_codegen(e->symbol);
+                AsmLog() << Helpers::indent(depth) << "mov " << Scratch::name(e->reg) << ", " << IntelCodegen::symbol_codegen(e->symbol);
 
         }
 
@@ -402,14 +402,14 @@ void expr_codegen(int depth, Expr *e)
 
     case EXPR_INTEGER_LITERAL:
         LOG(INFO) << "expr_codegen::EXPR_INTEGER_LITERAL";
-        e->reg = scratch_alloc();
-        AsmLog() << indent(depth) << "mov " << scratch_name(e->reg) << ", " << e->literal_value;
+        e->reg = Scratch::alloc();
+        AsmLog() << Helpers::indent(depth) << "mov " << Scratch::name(e->reg) << ", " << e->literal_value;
         break;
 
     case EXPR_STRING_LITERAL:
     {
         LOG(INFO) << "expr_codegen::EXPR_STRING_LITERAL";
-        e->reg = scratch_alloc();
+        e->reg = Scratch::alloc();
         // Generate a unique label for the string
         std::string str_label = create_label();
 
@@ -418,68 +418,68 @@ void expr_codegen(int depth, Expr *e)
         dataSection << "\t.string " << e->string_literal << "\n"; // Note: Added newline and fixed formatting
         
         // Emit the assembly code to load the address of the format string into rdi
-        AsmLog() << indent(depth) << "lea " << argument_registers[0] << ", " << str_label << "";
-        LOG(DEBUG) << "stmt_codegen::Loaded format string address into " << argument_registers[0];
+        AsmLog() << Helpers::indent(depth) << "lea " << Scratch::argument_registers[0] << ", " << str_label << "";
+        LOG(DEBUG) << "stmt_codegen::Loaded format string address into " << Scratch::argument_registers[0];
 
-        //AsmLog() << indent(depth) << "mov " << scratch_name(e->reg) << ", " << str_label;
+        //AsmLog() << Helpers::indent(depth) << "mov " << scratch_name(e->reg) << ", " << str_label;
     }        
     break;
 
     case EXPR_ADD:
         LOG(INFO) << "expr_codegen::EXPR_ADD";
-        expr_codegen(depth, e->left);
-        expr_codegen(depth, e->right);
-        AsmLog() << indent(depth) << "add " << scratch_name(e->left->reg) << ", " << scratch_name(e->right->reg);
+        IntelCodegen::expr_codegen(depth, e->left);
+        IntelCodegen::expr_codegen(depth, e->right);
+        AsmLog() << Helpers::indent(depth) << "add " << Scratch::name(e->left->reg) << ", " << Scratch::name(e->right->reg);
         e->reg = e->left->reg;
-        scratch_free(e->right->reg);
+        Scratch::free(e->right->reg);
         break;
 
     case EXPR_SUBTRACT:
         LOG(INFO) << "expr_codegen::EXPR_SUBTRACT";
-        expr_codegen(depth, e->left);
-        expr_codegen(depth, e->right);
-        AsmLog() << indent(depth) << "sub " << scratch_name(e->left->reg) << ", " << scratch_name(e->right->reg);
+        IntelCodegen::expr_codegen(depth, e->left);
+        IntelCodegen::expr_codegen(depth, e->right);
+        AsmLog() << Helpers::indent(depth) << "sub " << Scratch::name(e->left->reg) << ", " << Scratch::name(e->right->reg);
         e->reg = e->left->reg;
-        scratch_free(e->left->reg);
+        Scratch::free(e->left->reg);
         break;
 
     case EXPR_MULTIPLY:
         LOG(INFO) << "expr_codegen::EXPR_MULTIPLY";
-        expr_codegen(depth, e->left);
-        expr_codegen(depth, e->right);
-        AsmLog() << indent(depth) << "imul " << scratch_name(e->left->reg) << ", " << scratch_name(e->right->reg);
+        IntelCodegen::expr_codegen(depth, e->left);
+        IntelCodegen::expr_codegen(depth, e->right);
+        AsmLog() << Helpers::indent(depth) << "imul " << Scratch::name(e->left->reg) << ", " << Scratch::name(e->right->reg);
         e->reg = e->left->reg;
-        scratch_free(e->right->reg);
+        Scratch::free(e->right->reg);
         break;
 
     case EXPR_DIVIDE:
         LOG(INFO) << "expr_codegen::EXPR_DIVIDE";
-        expr_codegen(depth, e->left);
-        expr_codegen(depth, e->right);
-        AsmLog() << indent(depth) << "mov rax, " << scratch_name(e->left->reg);
-        AsmLog() << indent(depth) << "cqo";
-        AsmLog() << indent(depth) << "idiv " << scratch_name(e->right->reg);
-        AsmLog() << indent(depth) << "mov " << scratch_name(e->left->reg) << ", rax";
+        IntelCodegen::expr_codegen(depth, e->left);
+        IntelCodegen::expr_codegen(depth, e->right);
+        AsmLog() << Helpers::indent(depth) << "mov rax, " << Scratch::name(e->left->reg);
+        AsmLog() << Helpers::indent(depth) << "cqo";
+        AsmLog() << Helpers::indent(depth) << "idiv " << Scratch::name(e->right->reg);
+        AsmLog() << Helpers::indent(depth) << "mov " << Scratch::name(e->left->reg) << ", rax";
         e->reg = e->left->reg;
-        scratch_free(e->right->reg);
+        Scratch::free(e->right->reg);
         break;
 
     case EXPR_BOOL_LITERAL:
         LOG(INFO) << "expr_codegen::EXPR_BOOL_LITERAL";
-        e->reg = scratch_alloc();
-        AsmLog() << indent(depth) << "mov " << scratch_name(e->reg) << ", " << (e->boolean_literal ? 1 : 0);
+        e->reg = Scratch::alloc();
+        AsmLog() << Helpers::indent(depth) << "mov " << Scratch::name(e->reg) << ", " << (e->boolean_literal ? 1 : 0);
         break;
 
     case EXPR_ASSIGN:
         LOG(INFO) << "expr_codegen::EXPR_ASSIGN";
-        expr_codegen(depth, e->right);
-        AsmLog() << indent(depth) << "mov " << symbol_codegen(e->left->symbol) << ", " << scratch_name(e->right->reg);
+        IntelCodegen::expr_codegen(depth, e->right);
+        AsmLog() << Helpers::indent(depth) << "mov " << IntelCodegen::symbol_codegen(e->left->symbol) << ", " << Scratch::name(e->right->reg);
         e->reg = e->right->reg;
         break;
         
     case EXPR_ARG:
         LOG(INFO) << "expr_codegen::EXPR_ARG";
-        expr_codegen(depth, e->left);
+        IntelCodegen::expr_codegen(depth, e->left);
         e->reg = e->left->reg;
         break;
 
@@ -496,37 +496,37 @@ void expr_codegen(int depth, Expr *e)
 
         while (arg) {
             LOG(INFO) << "Analyzing arguments...";
-            expr_codegen(depth, arg);
+            IntelCodegen::expr_codegen(depth, arg);
             arg_regs.push_back(arg->reg);
             arg = arg->right;
         }
 
         // Push arguments onto the stack in correct order
         for (auto it = arg_regs.rbegin(); it != arg_regs.rend(); ++it) {
-            AsmLog() << indent(depth) << "push " << scratch_name(*it);
-            scratch_free(*it);
+            AsmLog() << Helpers::indent(depth) << "push " << Scratch::name(*it);
+            Scratch::free(*it);
         }
 
         // Save the result on the stack before calling the function
-        AsmLog() << indent(depth) << "push rax";
+        AsmLog() << Helpers::indent(depth) << "push rax";
 
         // Call the function
-        expr_codegen(depth, e->left);
-        AsmLog() << indent(depth) << "call " << symbol_codegen(e->left->symbol);
+        IntelCodegen::expr_codegen(depth, e->left);
+        AsmLog() << Helpers::indent(depth) << "call " << IntelCodegen::symbol_codegen(e->left->symbol);
         // Move the result of fxnCall to rcx
-        e->reg = scratch_alloc();
-        AsmLog() << indent(depth) << "mov " << scratch_name(e->reg) << ", rax";
+        e->reg = Scratch::alloc();
+        AsmLog() << Helpers::indent(depth) << "mov " << Scratch::name(e->reg) << ", rax";
 
 
-        AsmLog() << indent(depth) << "pop rax";
+        AsmLog() << Helpers::indent(depth) << "pop rax";
 
         // Adjust the stack pointer if there were arguments
         if (!arg_regs.empty()) {
-            AsmLog() << indent(depth) << "add rsp, " << (arg_regs.size() * 8);
+            AsmLog() << Helpers::indent(depth) << "add rsp, " << (arg_regs.size() * 8);
         }
 
         // Move the result into rax for return
-        //AsmLog() << indent(depth) << "mov rax, " << scratch_name(e->reg);
+        //AsmLog() << Helpers::indent(depth) << "mov rax, " << scratch_name(e->reg);
     }
     break;
     case EXPR_EQ:
@@ -536,50 +536,50 @@ void expr_codegen(int depth, Expr *e)
     case EXPR_LEQ:
     case EXPR_GEQ:
         LOG(INFO) << "expr_codegen::Comparison";
-        expr_codegen(depth, e->left);
-        expr_codegen(depth, e->right);
-        AsmLog() << indent(depth) << "cmp " << scratch_name(e->left->reg) << ", " << scratch_name(e->right->reg);
+        IntelCodegen::expr_codegen(depth, e->left);
+        IntelCodegen::expr_codegen(depth, e->right);
+        AsmLog() << Helpers::indent(depth) << "cmp " << Scratch::name(e->left->reg) << ", " << Scratch::name(e->right->reg);
 
         switch (e->kind)
         {
         case EXPR_EQ:
-            AsmLog() << indent(depth) << "sete al";
+            AsmLog() << Helpers::indent(depth) << "sete al";
             break;
         case EXPR_NEQ:
-            AsmLog() << indent(depth) << "setne al";
+            AsmLog() << Helpers::indent(depth) << "setne al";
             break;
         case EXPR_LT:
-            AsmLog() << indent(depth) << "setl al";
+            AsmLog() << Helpers::indent(depth) << "setl al";
             break;
         case EXPR_GT:
-            AsmLog() << indent(depth) << "setg al";
+            AsmLog() << Helpers::indent(depth) << "setg al";
             break;
         case EXPR_LEQ:
-            AsmLog() << indent(depth) << "setle al";
+            AsmLog() << Helpers::indent(depth) << "setle al";
             break;
         case EXPR_GEQ:
-            AsmLog() << indent(depth) << "setge al";
+            AsmLog() << Helpers::indent(depth) << "setge al";
             break;
         default:
-            LOG(ERROR) << indent(depth) << "expr_codegen:: Unsupported comparison kind: " << expr_to_string(e->kind);
+            LOG(ERROR) << Helpers::indent(depth) << "expr_codegen:: Unsupported comparison kind: " << expr_to_string(e->kind);
             exit(EXIT_FAILURE);
         }
 
-        AsmLog() << indent(depth) << "movzx " << scratch_name(e->left->reg) << ", al";
+        AsmLog() << Helpers::indent(depth) << "movzx " << Scratch::name(e->left->reg) << ", al";
         e->reg = e->left->reg;
-        scratch_free(e->right->reg);
+        Scratch::free(e->right->reg);
         break;
 
 
     default:
-        LOG(ERROR) << indent(depth) << "expr_codegen:: Unsupported expression kind: " << expr_to_string(e->kind);
+        LOG(ERROR) << Helpers::indent(depth) << "expr_codegen:: Unsupported expression kind: " << expr_to_string(e->kind);
         exit(EXIT_FAILURE);
         break;
     }
 }
 
 
-void decl_finish_codegen()
+void IntelCodegen::decl_finish_codegen()
 {
     AsmLog() << "\n.data";
     AsmLog() << dataSection.str();

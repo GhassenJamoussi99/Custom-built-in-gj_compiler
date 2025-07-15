@@ -568,7 +568,6 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
@@ -1239,10 +1238,10 @@ yyreduce:
                                                                       decl_resolve((yyvsp[0].decl)); 
                                                                       decl_typecheck((yyvsp[0].decl));
                                                                       std::cout << "\nBefore folding\n"; 
-                                                                      print_decl_list((yyvsp[0].decl));
-                                                                      constant_fold_decls((yyvsp[0].decl));
+                                                                      Helpers::print_decl_list((yyvsp[0].decl));
+                                                                      SemanticRoutines::constant_fold_decls((yyvsp[0].decl));
                                                                       std::cout << "\nAfter folding\n"; 
-                                                                      print_decl_list((yyvsp[0].decl));
+                                                                      Helpers::print_decl_list((yyvsp[0].decl));
                                                                       decl_codegen((yyvsp[0].decl));
                                                                     }
 #line 1249 "external/parser.cpp"

@@ -14,7 +14,7 @@ void compiler::compile() {
     AsmLog() << "\n.text  # Start the code section";
 
     // Initialize the global scope
-    scope_enter();
+    Scope::enter();
     
     // Check whether the given program is standard compliant
     if (yyparse() == 0)
@@ -26,6 +26,6 @@ void compiler::compile() {
     }
 
     // Exit the global scope
-    scope_exit();
+    Scope::exit();
 
 }

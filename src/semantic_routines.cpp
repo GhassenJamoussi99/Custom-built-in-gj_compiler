@@ -7,7 +7,7 @@
 #include <string>
 #include <iomanip>
 
-void constant_fold_expr(Expr *ast)
+void SemanticRoutines::constant_fold_expr(Expr *ast)
 {
     if (!ast)
     {
@@ -22,7 +22,7 @@ void constant_fold_expr(Expr *ast)
     {
         LOG(DEBUG) << "Folding left child of node kind: " << expr_to_string(ast->kind)
                    << " with value: " << ast->literal_value << " with name: " << ast->name;
-        constant_fold_expr(ast->left);
+        SemanticRoutines::constant_fold_expr(ast->left);
     }
     else
     {
@@ -33,7 +33,7 @@ void constant_fold_expr(Expr *ast)
     {
         LOG(DEBUG) << "Folding right child of node kind: " << expr_to_string(ast->kind)
                    << " with value: " << ast->literal_value;
-        constant_fold_expr(ast->right);
+        SemanticRoutines::constant_fold_expr(ast->right);
     }
     else
     {
@@ -94,7 +94,7 @@ void constant_fold_expr(Expr *ast)
 }
 
 
-void constant_fold_stmt(Stmt *statement)
+void SemanticRoutines::constant_fold_stmt(Stmt *statement)
 {
     if (!statement)
     {
@@ -110,7 +110,7 @@ void constant_fold_stmt(Stmt *statement)
             if (statement->decl)
             {
                 LOG(DEBUG) << "Folding declaration statement.";
-                constant_fold_decls(statement->decl);
+                SemanticRoutines::constant_fold_decls(statement->decl);
             }
             break;
         case STMT_EXPR:
@@ -118,51 +118,51 @@ void constant_fold_stmt(Stmt *statement)
             if (statement->expr_value)
             {
                 LOG(DEBUG) << "Folding if/if-else condition.";
-                constant_fold_expr(statement->expr_value);
+                SemanticRoutines::constant_fold_expr(statement->expr_value);
             }
             if (statement->body)
             {
                 LOG(DEBUG) << "Folding if/if-else body.";
-                constant_fold_stmt(statement->body);
+                SemanticRoutines::constant_fold_stmt(statement->body);
             }
             if (statement->else_body)
             {
                 LOG(DEBUG) << "Folding else body.";
-                constant_fold_stmt(statement->else_body);
+                SemanticRoutines::constant_fold_stmt(statement->else_body);
             }
             break;
         case STMT_FOR:
             if (statement->init_expr)
             {
                 LOG(DEBUG) << "Folding for-loop init expression.";
-                constant_fold_expr(statement->init_expr);
+                SemanticRoutines::constant_fold_expr(statement->init_expr);
             }
             if (statement->expr_value)
             {
                 LOG(DEBUG) << "Folding for-loop condition.";
-                constant_fold_expr(statement->expr_value);
+                SemanticRoutines::constant_fold_expr(statement->expr_value);
             }
             if (statement->next_expr)
             {
                 LOG(DEBUG) << "Folding for-loop next expression.";
-                constant_fold_expr(statement->next_expr);
+                SemanticRoutines::constant_fold_expr(statement->next_expr);
             }
             if (statement->body)
             {
                 LOG(DEBUG) << "Folding for-loop body.";
-                constant_fold_stmt(statement->body);
+                SemanticRoutines::constant_fold_stmt(statement->body);
             }
             break;
         case STMT_WHILE:
             if (statement->expr_value)
             {
                 LOG(DEBUG) << "Folding while-loop condition.";
-                constant_fold_expr(statement->expr_value);
+                SemanticRoutines::constant_fold_expr(statement->expr_value);
             }
             if (statement->body)
             {
                 LOG(DEBUG) << "Folding while-loop body.";
-                constant_fold_stmt(statement->body);
+                SemanticRoutines::constant_fold_stmt(statement->body);
             }
             break;
         case STMT_PRINT:
@@ -170,21 +170,21 @@ void constant_fold_stmt(Stmt *statement)
             if (statement->expr_value)
             {
                 LOG(DEBUG) << "Folding print/return statement.";
-                constant_fold_expr(statement->expr_value);
+                SemanticRoutines::constant_fold_expr(statement->expr_value);
             }
             break;
         case STMT_FUNCTION:
             if (statement->body)
             {
                 LOG(DEBUG) << "Folding function body.";
-                constant_fold_stmt(statement->body);
+                SemanticRoutines::constant_fold_stmt(statement->body);
             }
             break;
         case STMT_BLOCK:
             if (statement->body)
             {
                 LOG(DEBUG) << "Folding block statement.";
-                constant_fold_stmt(statement->body);
+                SemanticRoutines::constant_fold_stmt(statement->body);
             }
             break;
         default:
@@ -196,20 +196,20 @@ void constant_fold_stmt(Stmt *statement)
     if (statement->next)
     {
         LOG(DEBUG) << "Folding next statement.";
-        constant_fold_stmt(statement->next);
+        SemanticRoutines::constant_fold_stmt(statement->next);
     }
 }
 
 
-void constant_fold_decls(Decl* decl_list) {
+void SemanticRoutines::constant_fold_decls(Decl* decl_list) {
     for (Decl* d = decl_list; d != nullptr; d = d->next) {
         if (d->code) {
             LOG(DEBUG) << "Folding declaration statements for: " << d->name;
-            constant_fold_stmt(d->code);
+            SemanticRoutines::constant_fold_stmt(d->code);
         }
         if (d->value) {
             LOG(DEBUG) << "Folding declaration expressions: " << d->name;
-            constant_fold_expr(d->value);
+            SemanticRoutines::constant_fold_expr(d->value);
         } else {
             LOG(DEBUG) << "Declaration " << d->name << " has a null expression.";
         }

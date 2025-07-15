@@ -13,14 +13,14 @@
 #include "log.h"
 #include "asm_log.h"
 
-void decl_typecheck(Decl *d) {
+void Typecheck::decl_typecheck(Decl *d) {
     LOG(INFO) << "decl::decl_typecheck";
 
     if (!d) return;
 
     if (d->value) {
         Type *t;
-        t = expr_typecheck(d->value);
+        t = Typecheck::expr_typecheck(d->value);
         if (!type_equals(t, d->decl_symbol->type)) {
             std::cerr << "Type error: Declaration type does not match the type of the assigned value. Declaration type: " 
                       << type_to_string(d->decl_symbol->type->kind) << ", Assigned value type: " << type_to_string(t->kind) << std::endl;
@@ -34,11 +34,11 @@ void decl_typecheck(Decl *d) {
     }
 
     if (d->next) {
-        decl_typecheck(d->next);
+        Typecheck::decl_typecheck(d->next);
     }
 }
 
-void stmt_typecheck(Stmt *s) {
+void Typecheck::stmt_typecheck(Stmt *s) {
     Type *t = nullptr;
 
     if (!s) return;
@@ -46,14 +46,14 @@ void stmt_typecheck(Stmt *s) {
     switch (s->kind) {
         case STMT_EXPR:
             LOG(INFO) << "stmt_typecheck::STMT_EXPR";
-            t = expr_typecheck(s->expr_value);
+            t = Typecheck::expr_typecheck(s->expr_value);
             type_delete(t);
             break;
 
         case STMT_IF_ELSE:
             LOG(INFO) << "stmt_typecheck::STMT_IF_ELSE";
             if (s->expr_value) {
-                t = expr_typecheck(s->expr_value);
+                t = Typecheck::expr_typecheck(s->expr_value);
             }
 
             if (t->kind != TYPE_BOOLEAN) {
@@ -68,7 +68,7 @@ void stmt_typecheck(Stmt *s) {
 
         case STMT_WHILE:
             LOG(INFO) << "stmt_typecheck::STMT_WHILE";
-            t = expr_typecheck(s->expr_value);
+            t = Typecheck::expr_typecheck(s->expr_value);
             if (t->kind != TYPE_BOOLEAN) {
                 std::cerr << "Type error: WHILE condition must be of boolean type. Condition type: " << t->kind << std::endl;
                 LOG(ERROR) << "stmt_typecheck::Type error: WHILE condition must be of boolean type. Condition type: " << t->kind;
@@ -85,14 +85,14 @@ void stmt_typecheck(Stmt *s) {
 
         case STMT_RETURN:
             LOG(INFO) << "stmt_typecheck::STMT_RETURN";
-            t = expr_typecheck(s->expr_value);
+            t = Typecheck::expr_typecheck(s->expr_value);
             //TODO later
             type_delete(t);
             break;
 
         case STMT_DECL:
             LOG(INFO) << "stmt_typecheck::STMT_DECL";
-            decl_typecheck(s->decl);
+            Typecheck::decl_typecheck(s->decl);
             break;
 
         case STMT_BLOCK:
@@ -105,11 +105,11 @@ void stmt_typecheck(Stmt *s) {
         case STMT_FOR:
             LOG(INFO) << "stmt_typecheck::STMT_FOR";
             if (s->init_expr) {
-                t = expr_typecheck(s->init_expr);
+                t = Typecheck::expr_typecheck(s->init_expr);
                 type_delete(t);
             }
             if (s->expr_value) {
-                t = expr_typecheck(s->expr_value);
+                t = Typecheck::expr_typecheck(s->expr_value);
                 if (t->kind != TYPE_BOOLEAN) {
                     std::cerr << "Type error: FOR loop condition must be of boolean type. Condition type: " << t->kind << std::endl;
                     LOG(ERROR) << "stmt_typecheck::Type error: FOR loop condition must be of boolean type. Condition type: " << t->kind;
@@ -118,7 +118,7 @@ void stmt_typecheck(Stmt *s) {
                 type_delete(t);
             }
             if (s->next_expr) {
-                t = expr_typecheck(s->next_expr);
+                t = Typecheck::expr_typecheck(s->next_expr);
                 type_delete(t);
             }
             if (s->body) s->body->typecheck();
@@ -143,7 +143,7 @@ void stmt_typecheck(Stmt *s) {
     }
 }
 
-Type *expr_typecheck(Expr *e)
+Type *Typecheck::expr_typecheck(Expr *e)
 {
     LOG(DEBUG) << "expr::expr_typecheck";
 
@@ -158,12 +158,12 @@ Type *expr_typecheck(Expr *e)
 
     if (e->left) {
         LOG(DEBUG) << "expr_typecheck: Checking left expression";
-        lt = expr_typecheck(e->left);
+        lt = Typecheck::expr_typecheck(e->left);
     }
 
     if (e->right) {
         LOG(DEBUG) << "expr_typecheck: Checking right expression";
-        rt = expr_typecheck(e->right);
+        rt = Typecheck::expr_typecheck(e->right);
     }
 
     switch (e->kind)

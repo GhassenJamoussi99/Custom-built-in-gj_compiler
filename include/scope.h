@@ -4,9 +4,13 @@
 
 #define STACK_MAX 256
 
-void scope_enter();
-void scope_exit();
-int scope_level();
+class Symbol;
 
-Symbol *scope_lookup( std::string name);
-void scope_bind( std::string name, Symbol *sym );
+class Scope {
+public:
+    static void enter();
+    static void exit();
+    static int level();
+    static Symbol* lookup(std::string name);
+    static void bind(std::string name, Symbol* sym);
+};
