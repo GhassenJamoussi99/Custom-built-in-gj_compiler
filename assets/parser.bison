@@ -86,11 +86,11 @@ program : decl_list                                                 {
 
                                                                       //Before folding
                                                                       DOT_LOGCFG.initiate();
-                                                                      print_decl_list_dot($1);
+                                                                      DotGen::print_decl_list_dot($1);
                                                                       DOT_LOGCFG.finish();
 
                                                                       //Fold - Optimize                                                    
-                                                                      constant_fold_decls($1);
+                                                                      SemanticRoutines::constant_fold_decls($1);
 
                                                                       //After folding
 
@@ -100,12 +100,12 @@ program : decl_list                                                 {
                                                                       DOT_LOGCFG.clearFile();
 
                                                                       DOT_LOGCFG.initiate();                                                                   
-                                                                      print_decl_list_dot($1);
+                                                                      DotGen::print_decl_list_dot($1);
                                                                       DOT_LOGCFG.finish();
 
                                                                       //Generate assembly code
-                                                                      decl_codegen($1);
-                                                                      decl_finish_codegen();
+                                                                      IntelCodegen::decl_codegen($1);
+                                                                      IntelCodegen::decl_finish_codegen();
                                                                     }    
         ;
 

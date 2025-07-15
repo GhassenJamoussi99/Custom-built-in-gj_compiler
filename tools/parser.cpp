@@ -1246,11 +1246,11 @@ yyreduce:
 
                                                                       //Before folding
                                                                       DOT_LOGCFG.initiate();
-                                                                      print_decl_list_dot((yyvsp[0].decl));
+                                                                      DotGen::print_decl_list_dot((yyvsp[0].decl));
                                                                       DOT_LOGCFG.finish();
 
                                                                       //Fold - Optimize                                                    
-                                                                      constant_fold_decls((yyvsp[0].decl));
+                                                                      SemanticRoutines::constant_fold_decls((yyvsp[0].decl));
 
                                                                       //After folding
 
@@ -1260,12 +1260,12 @@ yyreduce:
                                                                       DOT_LOGCFG.clearFile();
 
                                                                       DOT_LOGCFG.initiate();                                                                   
-                                                                      print_decl_list_dot((yyvsp[0].decl));
+                                                                      DotGen::print_decl_list_dot((yyvsp[0].decl));
                                                                       DOT_LOGCFG.finish();
 
                                                                       //Generate assembly code
-                                                                      decl_codegen((yyvsp[0].decl));
-                                                                      decl_finish_codegen();
+                                                                      IntelCodegen::decl_codegen((yyvsp[0].decl));
+                                                                      IntelCodegen::decl_finish_codegen();
                                                                     }
 #line 1271 "tools/parser.cpp"
     break;

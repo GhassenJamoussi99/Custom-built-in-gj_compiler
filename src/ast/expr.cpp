@@ -122,7 +122,7 @@ void Expr::resolve(Expr *e) {
         return;
     if (e->kind == EXPR_NAME)
     {
-        e->symbol = scope_lookup(e->name);
+        e->symbol = Scope::lookup(e->name);
         e->type = e->symbol->type;
     }
     else

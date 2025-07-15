@@ -23,23 +23,23 @@ void Decl::resolve() {
     Decl* d = this;
     while (d) {
         LOG(INFO) << "Resolving declaration: " << d->name;
-        symbol_t kind = scope_level() > 1 ? SYMBOL_LOCAL : SYMBOL_GLOBAL;
+        symbol_t kind = Scope::level() > 1 ? SYMBOL_LOCAL : SYMBOL_GLOBAL;
         d->decl_symbol = new Symbol(kind, d->decl_type, d->name);
         expr_resolve(d->value);
-        scope_bind(d->name, d->decl_symbol);
+        Scope::bind(d->name, d->decl_symbol);
         if (d->code) {
-            scope_enter();
+            Scope::enter();
             param_list* params = d->decl_type->params;
             while (params) {
                 LOG(INFO) << "Resolving parameter: " << params->name;
                 Symbol* param_symbol = new Symbol(SYMBOL_PARAM, params->type, params->name);
-                scope_bind(params->name, param_symbol);
+                Scope::bind(params->name, param_symbol);
                 params = params->next;
             }
             d->code->resolve();
-            d->local_var_count = scope_stack_local_var_counts[scope_level()];
+            d->local_var_count = scope_stack_local_var_counts[Scope::level()];
             LOG(INFO) << "Number of local variables " << d->local_var_count;
-            scope_exit();
+            Scope::exit();
         }
         d = d->next;
     }
